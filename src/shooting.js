@@ -1,8 +1,10 @@
 //Uses the selected actor to figure out guns
+if(canvas.tokens.controlled.length != 1){
+  ui.notifications.warn("Please select a single token to use with this Macro");
+  return;
+} 
 let selected = canvas.tokens.controlled[0].actor;
-if (typeof selected === "undefined") {
-  ui.notifications.warn("You have no Token selected");
-}
+
 
 //Ignores melee/wepons that don't have the 'shots' property
 let weapons = selected.items.filter(
