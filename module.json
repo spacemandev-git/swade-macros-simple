@@ -1,0 +1,21 @@
+{
+  "name":"swade-macros-simple",
+  "title": "swade-macros-simple",
+  "description": "A set of automation macros for SWADE",
+  "systems": ["swade"],
+  "version": "0.1.0",
+  "author":"spacemandev",
+  "scripts": [],
+  "packs": [
+    {
+      "name": "SWADE-Macros",
+      "label": "SWADE Macros",
+      "system": "swade",
+      "path": "packs/macros.db",
+      "entity": "Macro",
+      "module": "swade-macros"
+    }
+  ],
+  "url":"https://github.com/Brownie79/swade-macros-simple",
+  "minimumCoreVersion": "0.6.0"
+}
