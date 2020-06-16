@@ -2,3 +2,4 @@ node_modules
 build.ts
 package.json
 tsconfig.json
+package-lock.json
