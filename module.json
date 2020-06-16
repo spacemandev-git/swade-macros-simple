@@ -18,6 +18,6 @@
   ],
   "url":"https://github.com/Brownie79/swade-macros-simple",
   "minimumCoreVersion": "0.6.0",
-  "manifest": "",
-  "download": ""
+  "manifest": "https://raw.githubusercontent.com/Brownie79/swade-macros-simple/master/module.json",
+  "download": "https://github.com/Brownie79/swade-macros-simple/raw/master/swade-macros-simple.zip"
 }
