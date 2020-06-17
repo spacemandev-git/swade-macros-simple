@@ -1,7 +1,6 @@
 //Uses the selected actor to figure out guns
 if(canvas.tokens.controlled.length != 1){
   ui.notifications.warn("Please select a single token to use with this Macro");
-  return;
 } 
 let selected = canvas.tokens.controlled[0].actor;
 

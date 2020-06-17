@@ -20,5 +20,5 @@
   "minimumCoreVersion": "0.6.0",
   "compatibleCoreVersion": "0.6.2",
   "manifest": "https://raw.githubusercontent.com/Brownie79/swade-macros-simple/master/module.json",
-  "download": "https://github.com/Brownie79/swade-macros-simple/archive/0.1.2.zip"
+  "download": "https://github.com/Brownie79/swade-macros-simple/releases/0.1.2.zip"
 }
