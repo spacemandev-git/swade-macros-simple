@@ -189,7 +189,9 @@ function fireWeapon(html) {
     <p>Notes: ${weapon.data.data.notes}</p>
     <p>Shots Left: ${weapon.data.data.shots}</p>
     <p>Total Modifier: ${totalMod}</p>
-    <p>Shooting Rolls: [${shootingRolls}]
+    <p></p>
+    <p> Mod Already Included in Results </p>
+    <p>Shooting Results: [${shootingRolls}]
     ${(selected.data.data.wildcard) ? `<p>Wild Die Roll: ${wilddieRoll}</p>` : ""}
   `
   printMessage(chatTemplate);
