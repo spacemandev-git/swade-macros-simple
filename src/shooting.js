@@ -113,7 +113,7 @@ function fireWeapon(html) {
   let numShootingDie = html.find("#selectedRoF")[0].value;
 
   //check if enough Ammo in clip to fire AND if RoF < weapon's RoF
-  if (numShootingDie >= weapon.data.data.rof || numShootingDie < 1) {
+  if (numShootingDie > weapon.data.data.rof || numShootingDie < 1) {
     ui.notifications.warn("Selected RoF beyond Weapon RoF");
     return;
   }
