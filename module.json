@@ -3,7 +3,7 @@
   "title": "swade-macros-simple",
   "description": "A set of automation macros for SWADE",
   "systems": ["swade"],
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "spacemandev",
   "scripts": [],
   "packs": [
