@@ -2,7 +2,12 @@
 if (canvas.tokens.controlled.length != 1) {
   ui.notifications.warn("Please select a single token to use with this Macro");
 }
+
 let selected = canvas.tokens.controlled[0].actor;
+let shootingSkill = selected.items.find((el) => el.data.name == "Shooting");
+if (shootingSkill == undefined) {
+  ui.notifications.warn("This Actor does not have the Shooting skill");
+}
 
 //Ignores melee/wepons that don't have the 'shots' property
 let weapons = selected.items.filter(
@@ -122,8 +127,8 @@ function fireWeapon(html) {
     return;
   }
 
-  let shootingSkill = selected.items.find((el) => el.data.name == "Shooting");
-  console.log(shootingSkill);
+  //let shootingSkill = selected.items.find((el) => el.data.name == "Shooting");
+  //console.log(shootingSkill);
   //individually rolls each die and explodes it. as per swade rules, each die is a seperate attack
   let shootingRolls = [];
   for (let i = 0; i < numShootingDie; i++) {
@@ -186,6 +191,12 @@ function fireWeapon(html) {
   let newShots = (weapon.data.data.shots -= rofAmmo[numShootingDie]);
   weapon.update({ "data.shots": newShots });
 
+  let resultsWithWildDie = shootingResults.concat(wilddieResult);
+  resultsWithWildDie = resultsWithWildDie.splice(
+    resultsWithWildDie.indexOf(Math.min.apply(resultsWithWildDie)),
+    1
+  );
+
   let chatTemplate = `
     <p>Weapon: ${weapon.data.name}</p>
     <p>Notes: ${weapon.data.data.notes}</p>
@@ -198,10 +209,9 @@ function fireWeapon(html) {
     <p>Total Modifier: ${totalMod}</p>
     <p></p>
     <p>
-      Shooting Results: [${shootingResults}] 
-      ${
-        selected.data.data.wildcard ? `| Wild Die Result: ${wilddieResult}` : ""
-      }
+      Results: <b>${
+        selected.data.data.wildcard ? resultsWithWildDie : shootingResults
+      }</b>
     </p>
   `;
   printMessage(chatTemplate);
