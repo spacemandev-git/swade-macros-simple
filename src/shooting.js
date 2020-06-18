@@ -1,9 +1,8 @@
 //Uses the selected actor to figure out guns
-if(canvas.tokens.controlled.length != 1){
+if (canvas.tokens.controlled.length != 1) {
   ui.notifications.warn("Please select a single token to use with this Macro");
-} 
+}
 let selected = canvas.tokens.controlled[0].actor;
-
 
 //Ignores melee/wepons that don't have the 'shots' property
 let weapons = selected.items.filter(
@@ -117,7 +116,9 @@ function fireWeapon(html) {
     return;
   }
   if (rofAmmo[numShootingDie] > weapon.data.data.shots) {
-    ui.notifications.warn(`Not enough Ammo to fire at this RoF. You only have (${weapon.data.data.shots}) shots left`);
+    ui.notifications.warn(
+      `Not enough Ammo to fire at this RoF. You only have (${weapon.data.data.shots}) shots left`
+    );
     return;
   }
 
@@ -171,28 +172,37 @@ function fireWeapon(html) {
   console.log("Total Mod: ", totalMod);
 
   //go over each roll and add the totalmod to it
-  shootingRolls.map((roll) => {
+
+  let shootingResults = shootingRolls.map((roll) => {
     return (roll += totalMod);
   });
-  wilddieRoll += totalMod;
+  let wilddieResult = wilddieRoll + totalMod;
 
   console.log("Shooting Rolls: ", shootingRolls);
   console.log("Wild Die Roll: ", wilddieRoll);
 
   //Spend the Bullets
   //selected.items.get(weapon.key).data.data.shots -= rofAmmo[numShootingDie]
-  let newShots = weapon.data.data.shots -= rofAmmo[numShootingDie]
-  weapon.update({'data.shots':  newShots});
+  let newShots = (weapon.data.data.shots -= rofAmmo[numShootingDie]);
+  weapon.update({ "data.shots": newShots });
 
   let chatTemplate = `
     <p>Weapon: ${weapon.data.name}</p>
     <p>Notes: ${weapon.data.data.notes}</p>
     <p>Shots Left: ${weapon.data.data.shots}</p>
+    <p></p>
+    <p>
+      Shooting Rolls: [${shootingRolls}] 
+      ${selected.data.data.wildcard ? ` | Wild Die Roll: ${wilddieRoll}` : ""}
+    </p>
     <p>Total Modifier: ${totalMod}</p>
     <p></p>
-    <p> Mod Already Included in Results </p>
-    <p>Shooting Results: [${shootingRolls}]
-    ${(selected.data.data.wildcard) ? `<p>Wild Die Roll: ${wilddieRoll}</p>` : ""}
-  `
+    <p>
+      Shooting Results: [${shootingResults}] 
+      ${
+        selected.data.data.wildcard ? `| Wild Die Result: ${wilddieResult}` : ""
+      }
+    </p>
+  `;
   printMessage(chatTemplate);
 }
