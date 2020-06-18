@@ -100,7 +100,7 @@ function getWeaponsListAsDropdown() {
   let template = ``;
   weapons.forEach((wep) => {
     template += `<option value="${wep.name}">${wep.name} | ROF ${wep.data.data.rof} | Shots ${wep.data.data.shots} </option>`;
-    console.log(template);
+    //console.log(template);
   });
 
   return template;
@@ -133,9 +133,9 @@ function fireWeapon(html) {
   let shootingRolls = [];
   for (let i = 0; i < numShootingDie; i++) {
     let newRoll = new Die(shootingSkill.data.data.die.sides).roll(1);
-    console.log(`Shooting Roll (${i}): `, newRoll.total);
+    //console.log(`Shooting Roll (${i}): `, newRoll.total);
     newRoll = newRoll.explode([shootingSkill.data.data.die.sides]).total;
-    console.log(`Shooting Roll (${i}) After Explosions: `, newRoll);
+    //console.log(`Shooting Roll (${i}) After Explosions: `, newRoll);
     shootingRolls.push(newRoll);
   }
 
@@ -144,8 +144,8 @@ function fireWeapon(html) {
     .roll(1)
     .explode([shootingSkill.data.data["wild-die"].sides]).total;
 
-  console.log("Shooting Rolls Before Mod: ", shootingRolls);
-  console.log("Wild Die Roll Before Mod: ", wilddieRoll);
+  //console.log("Shooting Rolls Before Mod: ", shootingRolls);
+  //console.log("Wild Die Roll Before Mod: ", wilddieRoll);
 
   //Build the Modifiers
   // Base Shooting Skill Mod
@@ -174,7 +174,7 @@ function fireWeapon(html) {
     otherMod +
     distractedMod +
     woundMod;
-  console.log("Total Mod: ", totalMod);
+  //console.log("Total Mod: ", totalMod);
 
   //go over each roll and add the totalmod to it
 
@@ -183,8 +183,8 @@ function fireWeapon(html) {
   });
   let wilddieResult = wilddieRoll + totalMod;
 
-  console.log("Shooting Rolls: ", shootingRolls);
-  console.log("Wild Die Roll: ", wilddieRoll);
+  //console.log("Shooting Rolls: ", shootingRolls);
+  //console.log("Wild Die Roll: ", wilddieRoll);
 
   //Spend the Bullets
   //selected.items.get(weapon.key).data.data.shots -= rofAmmo[numShootingDie]
@@ -192,8 +192,9 @@ function fireWeapon(html) {
   weapon.update({ "data.shots": newShots });
 
   let resultsWithWildDie = shootingResults.concat(wilddieResult);
-  resultsWithWildDie = resultsWithWildDie.splice(
-    resultsWithWildDie.indexOf(Math.min.apply(resultsWithWildDie)),
+
+  resultsWithWildDie.splice(
+    resultsWithWildDie.indexOf(Math.min(...resultsWithWildDie)),
     1
   );
 
