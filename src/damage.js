@@ -20,9 +20,16 @@ let selectedWeaponsList = selected.items.filter(
 let targetArmors = target.items.filter(
   (el) => el.data.data.equipped && el.data.type == "armor"
 );
+let targetArmor = 0;
+targetArmors.map((el) => {
+  targetArmor += parseInt(el.data.data.armor);
+});
+
 let targetToughenss = target.data.data.stats.toughness; //{toughness ="", armor: #, mod: #}
+// console.log(targetToughenss);
 rollDamage();
 function rollDamage() {
+  //| Other Mods: ${targetToughenss.modifier}
   let template = `
   <div>
     <p><b>Selected Token Information</b></p>
@@ -33,14 +40,12 @@ function rollDamage() {
     </select>
     <p></p>
     <p><b>Target Information</b></p>
-    <p>Base Toughness: ${targetToughenss.value} | Armor: ${
-    targetToughenss.armor
-  } | Other Mods: ${targetToughenss.modifier}</p>
+    <p>Base Toughness: ${targetToughenss.value} | Armor: ${targetArmor} </p> 
     <p>Armor Notes: </p>
     ${getTargetArmorNotes()}
+    <p>Ignore Armor: <input type="checkbox" id="ignoreArmor"></input></p>    
     <p></p>
     <p><b>Other Modifiers</b></p>
-    
     <p>
     <label>Has the Drop?</label>
     <input type="checkbox" id="hasDrop"></input>
@@ -93,8 +98,15 @@ function applyDamage(html) {
     (el) => el.name == html.find("#selectedWeapon")[0].value
   );
 
-  let rollString = selectedWeapon.data.data.damage + "x= ";
-  rollString += html.find("#bonusDmg")[0].checked ? " + 1d6x= " : "";
+  let wepDmgRoll = selectedWeapon.data.data.damage.split("+");
+  if (wepDmgRoll.length > 1) {
+    wepDmgRoll = wepDmgRoll[0] + "x= " + wepDmgRoll[1];
+  } else {
+    wepDmgRoll = selectedWeapon.data.data.damage + "x= ";
+  }
+
+  let rollString =
+    wepDmgRoll + (html.find("#bonusDmg")[0].checked ? " + 1d6x= " : "");
 
   let dmgRoll = new Roll(rollString, actor.getRollShortcuts()).roll().total;
   let dmgMod =
@@ -102,11 +114,25 @@ function applyDamage(html) {
       ? 4
       : 0;
 
-  let armorAfterAP = targetToughenss.armor - selectedWeapon.data.data.ap;
-  armorAfterAP = armorAfterAp < 0 ? 0 : armorAfterAP;
+  let armorAfterAP = targetArmor - selectedWeapon.data.data.ap;
+  armorAfterAP = armorAfterAP < 0 ? 0 : armorAfterAP;
 
   let tough =
-    parseInt(targetToughenss.value) + armorAfterAP + targetToughenss.modifier;
+    parseInt(targetToughenss.value) +
+    (html.find("#ignoreArmor").checked ? 0 : armorAfterAP); // + targetToughenss.modifier;
+  let dmg = dmgRoll + dmgMod - tough;
+  let shakenText = "";
+  if (dmg > 12) {
+    shakenText = "Success (3 Raises)";
+  } else if (dmg > 8) {
+    shakenText = "Success (2 Raises)";
+  } else if (dmg > 4) {
+    shakenText = "Success (1 Raise)";
+  } else if (dmg >= 0) {
+    shakenText = "Success";
+  } else {
+    shakenText = "No Successes";
+  }
 
   let result = `
   <p>Weapon: ${selectedWeapon.name} | AP ${selectedWeapon.data.data.ap}</p>
@@ -114,6 +140,7 @@ function applyDamage(html) {
   <p>Target Toughness After AP: ${tough}</p>
   <p></p>
   <p>Damage dealt: <b>${dmgRoll + dmgMod - tough}</b></p>
+  <p>${shakenText}</p>
   `;
 
   ChatMessage.create({
