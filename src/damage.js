@@ -119,7 +119,7 @@ function applyDamage(html) {
 
   let tough =
     parseInt(targetToughenss.value) +
-    (html.find("#ignoreArmor").checked ? 0 : armorAfterAP); // + targetToughenss.modifier;
+    (html.find("#ignoreArmor")[0].checked ? 0 : armorAfterAP); // + targetToughenss.modifier;
   let dmg = dmgRoll + dmgMod - tough;
   let shakenText = "";
   if (dmg > 12) {
