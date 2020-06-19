@@ -98,21 +98,38 @@ function applyDamage(html) {
     (el) => el.name == html.find("#selectedWeapon")[0].value
   );
 
-  let wepDmgRoll = selectedWeapon.data.data.damage.split("+");
-  if (wepDmgRoll.length > 1) {
-    wepDmgRoll = wepDmgRoll[0] + "x= " + wepDmgRoll[1];
-  } else {
-    wepDmgRoll = selectedWeapon.data.data.damage + "x= ";
-  }
+  // @str + d6
+  // 2d6 + 1
+  // 2d4
 
+  let parts = selectedWeapon.data.data.damage.split("+");
+  parts = parts.map((part) => {
+    if (part.indexOf("d") > -1) {
+      return `${part}x=`;
+    } else {
+      return part;
+    }
+  });
+  console.log(parts);
+  let wepDmgRoll = "";
+  for (let i = 0; i < parts.length; i++) {
+    if (i != parts.length - 1) {
+      wepDmgRoll += `${parts[i]} + `;
+    } else {
+      wepDmgRoll += parts[i];
+    }
+  }
+  console.log(wepDmgRoll);
   let rollString =
     wepDmgRoll + (html.find("#bonusDmg")[0].checked ? " + 1d6x= " : "");
 
-  let dmgRoll = new Roll(rollString, actor.getRollShortcuts()).roll().total;
+  let dmgRoll = new Roll(rollString, actor.getRollShortcuts()).roll();
+  console.log(dmgRoll);
+  dmgRoll = dmgRoll.total;
+  console.log(parseInt(html.find("#dmgMod")[0].value));
   let dmgMod =
-    parseInt(html.find("#dmgMod")[0].value) + html.find("#hasDrop")[0].checked
-      ? 4
-      : 0;
+    parseInt(html.find("#dmgMod")[0].value) +
+    (html.find("#hasDrop")[0].checked ? 4 : 0);
 
   let armorAfterAP = targetArmor - selectedWeapon.data.data.ap;
   armorAfterAP = armorAfterAP < 0 ? 0 : armorAfterAP;
@@ -122,11 +139,11 @@ function applyDamage(html) {
     (html.find("#ignoreArmor")[0].checked ? 0 : armorAfterAP); // + targetToughenss.modifier;
   let dmg = dmgRoll + dmgMod - tough;
   let shakenText = "";
-  if (dmg > 12) {
+  if (dmg >= 12) {
     shakenText = "Success (3 Raises)";
-  } else if (dmg > 8) {
+  } else if (dmg >= 8) {
     shakenText = "Success (2 Raises)";
-  } else if (dmg > 4) {
+  } else if (dmg >= 4) {
     shakenText = "Success (1 Raise)";
   } else if (dmg >= 0) {
     shakenText = "Success";
