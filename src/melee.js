@@ -135,5 +135,4 @@ function rollFighting(html) {
     },
     content: chatTemplate,
   });
-  console.log(rollFormula);
 }

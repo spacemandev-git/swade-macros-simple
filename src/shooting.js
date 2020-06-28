@@ -1,4 +1,4 @@
-//Uses the selected actor to figure out guns
+//Get Selected Actor
 if (canvas.tokens.controlled.length != 1) {
   ui.notifications.warn("Please select a single token to use with this Macro");
 }
@@ -6,7 +6,7 @@ if (canvas.tokens.controlled.length != 1) {
 let selected = canvas.tokens.controlled[0].actor;
 let shootingSkill = selected.items.find((el) => el.data.name == "Shooting");
 if (shootingSkill == undefined) {
-  ui.notifications.warn("This Actor does not have the Shooting skill");
+  ui.notifications.warn("This actor does not have the Shooting Skill");
 }
 
 //Ignores melee/wepons that don't have the 'shots' property
@@ -17,63 +17,61 @@ let weapons = selected.items.filter(
 //SWADE rules for how much ammo is expended per RoF
 const rofAmmo = { 1: 1, 2: 5, 3: 10, 4: 20, 5: 40, 6: 50 };
 
-//Dialog Creater that asks for any modifiers and what gun to use
 getFiringSolution();
 
-//Utility function for printing things to chat
-function printMessage(message) {
-  ChatMessage.create(
-    {
-      speaker: {
-        actor: selected,
-        alias: selected.name,
-      },
-      content: message,
-    },
-    {}
-  );
-}
-
-//Someone please teach me how to make pretty HTML templates because I can't CSS if my life depended on it
 function getFiringSolution() {
-  let weaponsList = getWeaponsListAsDropdown();
+  let weaponsDropdown = "";
+  weapons.forEach((wep) => {
+    weaponsDropdown += `<option value="${wep.name}">${wep.name} | ROF ${wep.data.data.rof} | Shots ${wep.data.data.shots} </option>`;
+    //console.log(template);
+  });
 
   let template = `
-    <div>
-      <div class="form-group">
-        <label>Select Weapon</label>
-        <select id="selectedRangedWeapon">
-        ${weaponsList}
-        </select></div>
-        <label for="targetCover">Target Cover</label>
-        <select id="targetCover">
+    <div class="form-group" style="display:flex; flex-direction:column;">
+      <p>Select Weapon <select id="selectedWeapon" style=""> ${weaponsDropdown} </select> </p>
+      <p> 
+        Target Cover 
+        <select id="targetCover" style="">
           <option value=0>No Cover</option>
           <option value=-2>Light</option>
           <option value=-4>Medium</option>
           <option value=-6>Heavy</option>
           <option value=-8>Complete</option>
         </select>
-        <label for="rangePenalty">Range Penalty</label>
-        <select id="rangePenalty">
+      </p>
+      <p>
+        Range Penalty
+        <select id="rangePenalty" style="">
           <option value=0>Short Range</option>
           <option value=-2>Medium</option>
           <option value=-4>Long</option>
           <option value=-8>Extreme</option>
         </select>
-        <div> 
-          <label for="selectedRoF">Selected RoF </label>
-          <input type="number" id="selectedRoF" style="width:50px;" value=1>
-          <br />
-          <label for="recoilPenalty">Recoil Penalty</label>
-          <input type="number" id="recoilPenalty" style="width:50px;" value=0>
-          <br />
-          <label for="mapPenalty">Multi Action Penalty </label>
-          <input type="number" id="mapPenalty" style="width:50px;" value=0>
-          <br />
-          <label for="otherMod">Other Shooting Mods</label>
-          <input type="number" id="otherMod" style="width:50px;" value=0>
-        </div>
-      </div>
+      </p>
+      <p>
+        Selected RoF
+        <input type="number" id="selectedRoF" style="width:50px" value=1>
+      </p>
+      <p>
+        Recoil Penalty
+        <input type="number" id="recoilPenalty" style=" width:50px" value=0>
+      </p>
+      <p>
+        Multi Action Penalty
+        <input type="number" id="maPenalty" style="width:50px" value=0>
+      </p>
+      <p>
+        Has The Drop?
+        <input type="checkbox" id="theDrop" syle="" >
+      </p>
+      <p>
+        Other Shooting Modifiers
+        <input type="number" id="otherMod" style="width:50px" value=0>
+      </p>
+      <p>
+        Auto Subtract Ammo?
+        <input type="checkbox" id="trackAmmo" syle="" checked />
+      </p>
     </div>
   `;
 
@@ -91,25 +89,12 @@ function getFiringSolution() {
         label: "Cancel",
       },
     },
-    default: "ok",
   }).render(true);
 }
 
-//utility function that that creates a dropdown of all weapons
-function getWeaponsListAsDropdown() {
-  let template = ``;
-  weapons.forEach((wep) => {
-    template += `<option value="${wep.name}">${wep.name} | ROF ${wep.data.data.rof} | Shots ${wep.data.data.shots} </option>`;
-    //console.log(template);
-  });
-
-  return template;
-}
-
-//Computes the rolls, total modifier, and takes care of ammo
 function fireWeapon(html) {
   let weapon = weapons.find(
-    (el) => el.name == html.find("#selectedRangedWeapon")[0].value
+    (el) => el.name == html.find("#selectedWeapon")[0].value
   );
 
   //swade pg93
@@ -120,50 +105,27 @@ function fireWeapon(html) {
     ui.notifications.warn("Selected RoF beyond Weapon RoF");
     return;
   }
-  if (rofAmmo[numShootingDie] > weapon.data.data.shots) {
+  if (
+    html.find("#trackAmmo")[0].checked &&
+    rofAmmo[numShootingDie] > weapon.data.data.shots
+  ) {
     ui.notifications.warn(
       `Not enough Ammo to fire at this RoF. You only have (${weapon.data.data.shots}) shots left`
     );
     return;
   }
 
-  //let shootingSkill = selected.items.find((el) => el.data.name == "Shooting");
-  //console.log(shootingSkill);
-  //individually rolls each die and explodes it. as per swade rules, each die is a seperate attack
-  let shootingRolls = [];
-  for (let i = 0; i < numShootingDie; i++) {
-    let newRoll = new Die(shootingSkill.data.data.die.sides).roll(1);
-    //console.log(`Shooting Roll (${i}): `, newRoll.total);
-    newRoll = newRoll.explode([shootingSkill.data.data.die.sides]).total;
-    //console.log(`Shooting Roll (${i}) After Explosions: `, newRoll);
-    shootingRolls.push(newRoll);
-  }
-
-  //will roll wild die for all attacks but only shows it if selected actor is a WildCard
-  let wilddieRoll = new Die(shootingSkill.data.data["wild-die"].sides)
-    .roll(1)
-    .explode([shootingSkill.data.data["wild-die"].sides]).total;
-
-  //console.log("Shooting Rolls Before Mod: ", shootingRolls);
-  //console.log("Wild Die Roll Before Mod: ", wilddieRoll);
-
-  //Build the Modifiers
-  // Base Shooting Skill Mod
   let shootingSkillMod = isNaN(parseInt(shootingSkill.data.data.die.modifier))
     ? 0
     : parseInt(shootingSkill.data.data.die.modifier);
   let coverMod = parseInt(html.find("#targetCover")[0].value);
   let recoilMod = parseInt(html.find("#recoilPenalty")[0].value);
-  let multiActionMod = parseInt(html.find("#mapPenalty")[0].value);
+  let multiActionMod = parseInt(html.find("#maPenalty")[0].value);
   let rangeMod = parseInt(html.find("#rangePenalty")[0].value);
   let otherMod = parseInt(html.find("#otherMod")[0].value);
-
-  let distractedMod = selected.data.data.status.isDistracted ? -2 : 0;
-  let woundMod =
-    (selected.data.data.wounds.value - selected.data.data.wounds.ignored) * -1;
-  if (woundMod < -3) {
-    woundMod = -3;
-  } //swade pg95
+  let theDropMod = html.find("#theDrop")[0].checked ? 4 : 0;
+  let woundMod = selected.calcWoundFatigePenalties();
+  let statusMod = selected.calcStatusPenalties();
 
   let totalMod =
     shootingSkillMod +
@@ -172,48 +134,63 @@ function fireWeapon(html) {
     multiActionMod +
     rangeMod +
     otherMod +
-    distractedMod +
-    woundMod;
-  //console.log("Total Mod: ", totalMod);
+    theDropMod +
+    woundMod +
+    statusMod;
 
-  //go over each roll and add the totalmod to it
+  let tModStr = totalMod >= 0 ? `+${totalMod}` : `${totalMod}`;
 
-  let shootingResults = shootingRolls.map((roll) => {
-    return (roll += totalMod);
-  });
-  let wilddieResult = wilddieRoll + totalMod;
+  let rollString = `1d${shootingSkill.data.data.die.sides}x= ${tModStr}`;
+  let wildString = `1d${shootingSkill.data.data["wild-die"].sides}x= ${tModStr}`;
 
-  //console.log("Shooting Rolls: ", shootingRolls);
-  //console.log("Wild Die Roll: ", wilddieRoll);
+  let rolls = [];
+  let results = [];
+  for (let i = 0; i < numShootingDie; i++) {
+    let roll = new Roll(rollString).roll();
+    if (game.dice3d) {
+      game.dice3d.showForRoll(roll);
+    }
+    rolls.push(roll.total);
+    results.push(roll.total);
+  }
 
-  //Spend the Bullets
-  //selected.items.get(weapon.key).data.data.shots -= rofAmmo[numShootingDie]
-  let newShots = (weapon.data.data.shots -= rofAmmo[numShootingDie]);
-  weapon.update({ "data.shots": newShots });
+  let wildRoll;
+  if (selected.data.data.wildcard) {
+    wildRoll = new Roll(wildString).roll();
+    if (game.dice3d) {
+      game.dice3d.showForRoll(wildRoll);
+    }
+    results.push(wildRoll.total);
+    results.splice(results.indexOf(Math.min(...results)), 1); //drop lowest after adding in Wild Roll
+  }
 
-  let resultsWithWildDie = shootingResults.concat(wilddieResult);
-
-  resultsWithWildDie.splice(
-    resultsWithWildDie.indexOf(Math.min(...resultsWithWildDie)),
-    1
-  );
+  //update Ammo
+  if (html.find("#trackAmmo")[0].checked) {
+    let newShots = (weapon.data.data.shots -= rofAmmo[numShootingDie]);
+    weapon.update({ "data.shots": newShots });
+  }
 
   let chatTemplate = `
-    <p>Weapon: ${weapon.data.name}</p>
-    <p>Notes: ${weapon.data.data.notes}</p>
-    <p>Shots Left: ${weapon.data.data.shots}</p>
-    <p></p>
-    <p>
-      Shooting Rolls: [${shootingRolls}] 
-      ${selected.data.data.wildcard ? ` | Wild Die Roll: ${wilddieRoll}` : ""}
-    </p>
-    <p>Total Modifier: ${totalMod}</p>
-    <p></p>
-    <p>
-      Results: <b>${
-        selected.data.data.wildcard ? resultsWithWildDie : shootingResults
-      }</b>
-    </p>
+  <p>Weapon: ${weapon.data.name}</p>
+  <p>Notes: ${weapon.data.data.notes}</p>
+  <p>Shots Left: ${weapon.data.data.shots}</p>
+  <p></p>
+  <p>
+    Shooting Rolls: [${rolls}] 
+    ${selected.data.data.wildcard ? ` | Wild Die Roll: ${wildRoll.total}` : ""}
+  </p>
+  <p>Roll String: ${rollString}</p>
+  <p></p>
+  <p>
+    Results: <b>[${results}]</b>
+  </p>
   `;
-  printMessage(chatTemplate);
+
+  ChatMessage.create({
+    speaker: {
+      actor: selected,
+      alias: selected.name,
+    },
+    content: chatTemplate,
+  });
 }
