@@ -1,3 +1,5 @@
+//version 1.0.0
+
 //Uses the selected actor to figure out guns
 if (canvas.tokens.controlled.length != 1) {
     ui.notifications.warn("To attack you need to select a token");
