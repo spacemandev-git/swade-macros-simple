@@ -140,6 +140,7 @@ function dealDamage(html) {
   let dmg = roll.total - tough;
   let numSuccesses = dmg / 4;
 
+  //The Success/Raise calculation is intentionally different than other macros
   let result = `
   <p>Weapon: ${selectedWeapon.name} | AP ${selectedWeapon.data.data.ap}</p>
   <p>Roll String: ${rollString}</p>
@@ -149,7 +150,7 @@ function dealDamage(html) {
   <p>Damage dealt: <b>${dmg}</b></p>
   <p><b>
   ${numSuccesses >= 0 ? "Success" : "No Damage"} 
-  ${numSuccesses >= 2 ? `| Raises ${Math.floor(numSuccesses - 1)}` : ""}  
+  ${numSuccesses >= 1 ? `| Raises ${Math.floor(numSuccesses)}` : ""}  
   </b></p>
   `;
 
