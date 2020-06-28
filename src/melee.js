@@ -3,12 +3,10 @@
 
 if (canvas.tokens.controlled.length != 1) {
   ui.notifications.warn("Please select a single token to use with this Macro");
-  return;
 }
 
 if (Array.from(game.user.targets).length != 1) {
   ui.notifications.warn("Please select a SINGLE target");
-  return;
 }
 
 let selected = canvas.tokens.controlled[0].actor;
