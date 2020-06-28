@@ -68,7 +68,7 @@ function rollDamage() {
       ok: {
         label: "Roll Damage",
         callback: async (html) => {
-          applyDamage(html);
+          dealDamage(html);
         },
       },
       cancel: {
@@ -93,14 +93,11 @@ function getTargetArmorNotes() {
   });
   return template;
 }
-function applyDamage(html) {
+
+function dealDamage(html) {
   let selectedWeapon = selectedWeaponsList.find(
     (el) => el.name == html.find("#selectedWeapon")[0].value
   );
-
-  // @str + d6
-  // 2d6 + 1
-  // 2d4
 
   let parts = selectedWeapon.data.data.damage.split("+");
   parts = parts.map((part) => {
@@ -110,26 +107,28 @@ function applyDamage(html) {
       return part;
     }
   });
-  console.log(parts);
+
   let wepDmgRoll = "";
   for (let i = 0; i < parts.length; i++) {
     if (i != parts.length - 1) {
-      wepDmgRoll += `${parts[i]} + `;
+      wepDmgRoll += `${parts[i]} +`;
     } else {
       wepDmgRoll += parts[i];
     }
   }
-  console.log(wepDmgRoll);
-  let rollString =
-    wepDmgRoll + (html.find("#bonusDmg")[0].checked ? " + 1d6x= " : "");
-
-  let dmgRoll = new Roll(rollString, actor.getRollShortcuts()).roll();
-  console.log(dmgRoll);
-  dmgRoll = dmgRoll.total;
-  console.log(parseInt(html.find("#dmgMod")[0].value));
   let dmgMod =
     parseInt(html.find("#dmgMod")[0].value) +
     (html.find("#hasDrop")[0].checked ? 4 : 0);
+
+  let rollString =
+    wepDmgRoll +
+    (html.find("#bonusDmg")[0].checked ? " +1d6x=" : "") +
+    (dmgMod >= 0 ? ` +${dmgMod}` : ` ${dmgMod}`);
+
+  let roll = new Roll(rollString, actor.getRollShortcuts()).roll();
+  if (game.dice3d) {
+    game.dice3d.showForRoll(roll);
+  }
 
   let armorAfterAP = targetArmor - selectedWeapon.data.data.ap;
   armorAfterAP = armorAfterAP < 0 ? 0 : armorAfterAP;
@@ -137,27 +136,21 @@ function applyDamage(html) {
   let tough =
     parseInt(targetToughenss.value) +
     (html.find("#ignoreArmor")[0].checked ? 0 : armorAfterAP); // + targetToughenss.modifier;
-  let dmg = dmgRoll + dmgMod - tough;
-  let shakenText = "";
-  if (dmg >= 12) {
-    shakenText = "Success (3 Raises)";
-  } else if (dmg >= 8) {
-    shakenText = "Success (2 Raises)";
-  } else if (dmg >= 4) {
-    shakenText = "Success (1 Raise)";
-  } else if (dmg >= 0) {
-    shakenText = "Success";
-  } else {
-    shakenText = "No Successes";
-  }
+
+  let dmg = roll.total - tough;
+  let numSuccesses = dmg / 4;
 
   let result = `
   <p>Weapon: ${selectedWeapon.name} | AP ${selectedWeapon.data.data.ap}</p>
-  <p>Damage Roll: ${dmgRoll} | Mod: ${dmgMod} | Total: ${dmgRoll + dmgMod}</p>
+  <p>Roll String: ${rollString}</p>
+  <p>Damage Roll: ${roll.total}</p>
   <p>Target Toughness After AP: ${tough}</p>
   <p></p>
-  <p>Damage dealt: <b>${dmgRoll + dmgMod - tough}</b></p>
-  <p>${shakenText}</p>
+  <p>Damage dealt: <b>${dmg}</b></p>
+  <p><b>
+  ${numSuccesses >= 0 ? "Success" : "No Damage"} 
+  ${numSuccesses >= 2 ? `| Raises ${Math.floor(numSuccesses - 1)}` : ""}  
+  </b></p>
   `;
 
   ChatMessage.create({

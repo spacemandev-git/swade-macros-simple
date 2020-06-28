@@ -124,7 +124,7 @@ function rollFighting(html) {
   <p> Roll: ${roll.total} </p>
   <p> <b>
   ${numRaises >= 0 ? "Success" : "Did Not Hit"} 
-  ${numRaises >= 1 ? `| Raises ${Math.floor(numRaises)}` : ""}  
+  ${numRaises >= 2 ? `| Raises ${Math.floor(numRaises - 1)}` : ""}  
   </b></p>
   `;
 
