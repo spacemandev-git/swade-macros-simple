@@ -305,7 +305,7 @@ function commitAttack(html, attackSkillName)
     skillModPool.push({ mod : "otherMod", value : html.find("#otherMod")[0] === undefined ? 0 : parseInt(html.find("#otherMod")[0].value) });
     skillModPool.push({ mod : "isUnstable", value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
     skillModPool.push({ mod : "distracted", value : currentActor.data.data.status.isDistracted ? -2 : 0});
-    skillModPool.push({ mod : "status", value : currentActor.calcStatusPenalties()});
+    skillModPool.push({ mod : "vulnerable", value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
     skillModPool.push({ mod : "woundsFatigue", value : currentActor.calcWoundFatigePenalties()});
     skillModPool.push({ mod : "sizeScale", value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
     if (attackSkillName == "Shooting") 
