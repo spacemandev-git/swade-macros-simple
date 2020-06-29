@@ -325,23 +325,33 @@ function commitAttack(html, attackSkillName)
     diceResultPool.forEach((el) => {
         displayRollResultTemplate +=
         `<div style="flex: 1 0 auto;">
-                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 255, 0, 0.35)" : "" } "><label title="" style="color: white;">${ el.roll.total }</label></div>
+                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "" } "><label title="" style="color: white;">${ el.roll.total }</label></div>
             </div>`;
     });
 
-    // Create roll interpretation template
-    diceResultPool.filter((el) => el.saved).forEach((el) =>{
-
-        let result = (el.roll.total + totalMod) >= (attackSkillName == "Shooting" ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) + 4 ? { display : "Raise", color : "rgb(0, 0, 255, 0.35)" } :
-                        (el.roll.total + totalMod) >= (attackSkillName == "Shooting" ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) ? { display : "Hit", color : "rgb(0, 255, 0, 0.35)" } : { display : "Miss", color : "rgb(255, 0, 0, 0.35)" }
-        
-        if (result.display != "Miss") successResultPool.push(result.display);
-        
+    // Check if critical failure !
+    if ((diceResultPool.filter((el) => el.roll.total == 1).length > (diceResultPool.length / 2)) && (!currentActor.data.data.wildcard || diceResultPool.find((el) => el.type == "wildRoll" && el.roll.total == 1) !== undefined)){
         displaySuccessResultTemplate += 
-            `<div style="flex: 1 0 auto;">
-                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : ${ result.color }"><label title="${ el.roll.total} (${ el.roll.total + totalMod })" style="color : white;">${ result.display }</label></div>
-            </div>`;
-    });
+        `<div style="flex: 1 0 auto;">
+            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : rgb(255, 0, 0, 0.35)"><label style="color : rgb(200, 0, 0);">!! Critical Failure !!</label></div>
+        </div>`;
+    }
+    else
+    {
+        // Create roll interpretation template
+        diceResultPool.filter((el) => el.saved).forEach((el) =>{
+
+            let result = (el.roll.total + totalMod) >= (attackSkillName == "Shooting" ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) + 4 ? { display : "Raise", color : "rgb(0, 0, 255, 0.35)" } :
+                            (el.roll.total + totalMod) >= (attackSkillName == "Shooting" ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) ? { display : "Hit", color : "rgb(0, 200, 0, 0.35)" } : { display : "Miss", color : "rgb(255, 0, 0, 0.35)" }
+            
+            if (result.display != "Miss") successResultPool.push(result.display);
+            
+            displaySuccessResultTemplate += 
+                `<div style="flex: 1 0 auto;">
+                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : ${ result.color }"><label title="${ el.roll.total} (${ el.roll.total + totalMod })" style="color : white;">${ result.display }</label></div>
+                </div>`;
+        });
+    }
 
     //Message chat template
     let chatTemplate = $(
@@ -396,7 +406,13 @@ function commitAttack(html, attackSkillName)
 
             ;
 
-            Hooks.once("renderChatMessage", (html, options) => { addEventListenerOnHtmlElement(options[0].querySelector("button"), 'click', (e) => { e.target.style.display = "none"; damageCalculation(weapon, successResultPool, attackSkillName)}); });
+            // Use Hook to add event to chat message html element
+            Hooks.once("renderChatMessage", (chatItem, html) => { 
+                addEventListenerOnHtmlElement(html[0].querySelector("button"), 'click', (e) => { 
+                    e.target.style.display = "none"; 
+                    damageCalculation({weapon, successResultPool, attackSkillName})
+                }); 
+            });
         }
 
         // Displat chat template
@@ -408,8 +424,12 @@ function commitAttack(html, attackSkillName)
 }// end commitAttack
 
 // Calcul and display damages
-function damageCalculation(weapon, successResultPool, attackSkillName)
+function damageCalculation(params) //weapon, successResultPool, attackSkillName)
 {
+    let weapon = params.weapon;
+    let successResultPool = params.successResultPool;
+    let attackSkillName = params.attackSkillName;
+
     // create a dice pool
     let diceResultPool = [];
     
@@ -459,8 +479,6 @@ function damageCalculation(weapon, successResultPool, attackSkillName)
         //                     + (parseInt(weapon.data.data.ap) > parseInt(currentTarget.data.data.stats.toughness.armor) ? 0 : parseInt(currentTarget.data.data.stats.toughness.armor) - parseInt(weapon.data.data.ap))
         //                     + parseInt(currentTarget.data.data.stats.toughness.modifier));
         
-        console.log(totalToughness);
-
         // Check if roll is better that toughness
         if (el.roll.total >= totalToughness) {
        
