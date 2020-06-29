@@ -1,51 +1,60 @@
-//version 1.0.0
+// Macro version 1.0.1
+
+let isValidConditions = true;
+let diceStep = ["d4", "d6", "d8", "d10", "d12"];
+let currentActor;
 
 //Uses the selected actor to figure out guns
 if (canvas.tokens.controlled.length != 1) {
     ui.notifications.warn("To attack you need to select a token");
-    return;
-}
-  
-// Set Actor
-let currentActor = canvas.tokens.controlled[0].actor;
+    isValidConditions = false;
+}else{
+    // Set Actor
+    currentActor = canvas.tokens.controlled[0].actor;
 
-// Check shaken state
-if (currentActor.data.data.status.isShaken) {
-    ui.notifications.warn("You are shaken, you can't attack");
-    return;
+    // Check shaken state
+    if (currentActor.data.data.status.isShaken) {
+        ui.notifications.warn("You are shaken, you can't attack");
+        isValidConditions = false;
+    }
 }
 
 // Check target selected
 if (Array.from(game.user.targets).length != 1) {
     ui.notifications.warn("To attack you need to select a target");
-    return;
+    isValidConditions = false;
 }
 
-// Set actor target
-let currentTarget = Array.from(game.user.targets)[0].actor;
-
-// Set weapons list
-let weapons = currentActor.items.filter((el) => el.type == "weapon");
+let currentTarget;
+let weapons;
 
 // Attack type choice
-new Dialog({
-    title: "Combat",
-    content: `<div style="padding: 10px 0px 10px 0px;"><center><i>Please, choose one attack type</i></center></div>`,
-    buttons: {
-        contact: {
-        label: "Melee",
-        callback: async (html) => {
-            meleeAttackForm(html);
+if (isValidConditions) {
+        // Set actor target
+    currentTarget = Array.from(game.user.targets)[0].actor;
+
+    // Set weapons list
+    weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
+
+    new Dialog({
+        title: "Combat",
+        content: `<div style="padding: 10px 0px 10px 0px;"><center><i>Please, choose one attack type</i></center></div>`,
+        buttons: {
+            contact: {
+                label: "Melee",
+                callback: async (html) => {
+                    meleeAttackForm(html);
+                },
+            },
+            ranged: {
+                label: "Range",
+                callback: async (html) => {
+                    rangedAttackForm(html);
+                },
+            }
         },
-        },
-        ranged: {
-        label: "Range",
-        callback: async (html) => {
-            rangedAttackForm(html);
-        },
-        }
-    },
-}, { width: 400 }).render(true);
+    }, { width: 400 }).render(true);
+}
 
 //Utility function for printing things to chat
 function printMessage(message) {
@@ -80,7 +89,7 @@ function meleeAttackForm(){
     // Check if template is not empty
     if (templateWeaponsList.length == 0) {
         ui.notifications.warn("No disponible weapon for this attack type");
-        return;
+        isValidConditions = false;
     }
 
     let template = `
@@ -110,24 +119,25 @@ function meleeAttackForm(){
         <i><label>Status and size scale are automated</label></i>
     </div>`;
   
-    // Show form
-    new Dialog({
-      title: "Melee Attack",
-      content: template,
-      buttons: {
-        ok: {
-          label: "Attack",
-          callback: async (html) => {
-            commitAttack(html, "Fighting");
-          },
-        },
-        cancel: {
-          label: "Cancel",
-        },
-      },
-      default: "ok",
-    }, { width: 550 }).render(true);
-
+    if (isValidConditions) {
+        // Show form
+        new Dialog({
+            title: "Melee Attack",
+            content: template,
+            buttons: {
+                ok: {
+                    label: "Attack",
+                    callback: async (html) => {
+                    commitAttack(html, "Fighting");
+                    },
+                },
+                cancel: {
+                    label: "Cancel",
+                },
+            },
+            default: "ok",
+        }, { width: 550 }).render(true);
+    }
 } // end contactAttackForm
 
 // Ranged attack form
@@ -145,7 +155,7 @@ function rangedAttackForm(){
     // Check if template is not empty
     if (templateWeaponsList.length == 0) {
         ui.notifications.warn("No disponible weapon for this attack type");
-        return;
+        isValidConditions = false;
     }
 
     let template = `
@@ -204,22 +214,25 @@ function rangedAttackForm(){
     </div>`;
     
     // Show form
-    new Dialog({
-        title: "Attaque à Distance",
-        content: template,
-        buttons: {
-            ok: {
-            label: "Attaquer",
-            callback: async (html) => {
-                commitAttack(html, "Shooting");
+    if (isValidConditions) {
+        new Dialog({
+            title: "Attaque à Distance",
+            content: template,
+            buttons: {
+                ok: {
+                label: "Attaquer",
+                callback: async (html) => {
+                    commitAttack(html, "Shooting");
+                },
+                },
+                cancel: {
+                label: "Annuler",
+                },
             },
-            },
-            cancel: {
-            label: "Annuler",
-            },
-        },
-        default: "ok",
-    },{ width: 550 }).render(true);
+            default: "ok",
+        },{ width: 550 }).render(true);
+    }
+    
 } // end rangedAttackForm
 
 //Attack process
@@ -257,13 +270,13 @@ function commitAttack(html, attackSkillName)
         // Check RoF
         if ((numAttack > weapon.data.data.rof)) {
             ui.notifications.warn("You need to select a valid RoF for your weapon");
-            return;
+            isValidConditions = false;
         };
         
         // Check ammo
         if (rofAmmo[numAttack] > weapon.data.data.shots) {
             ui.notifications.warn(`No munition for this rate of fore, you have (${weapon.data.data.shots}) ammo left`);
-            return;
+            isValidConditions = false;
         };
     };
 
@@ -285,17 +298,20 @@ function commitAttack(html, attackSkillName)
 
     // Build Modifiers
     let skillModPool = [];
-    skillModPool.push({ mod : "unSkilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
+    skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
     skillModPool.push({ mod : "rangePenalty", value : html.find("#rangePenalty")[0] === undefined ? 0 : parseInt(html.find("#rangePenalty")[0].value) });
     skillModPool.push({ mod : "targetCover", value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
     skillModPool.push({ mod : "isRecoil", value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
     skillModPool.push({ mod : "otherMod", value : html.find("#otherMod")[0] === undefined ? 0 : parseInt(html.find("#otherMod")[0].value) });
     skillModPool.push({ mod : "isUnstable", value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
     skillModPool.push({ mod : "distracted", value : currentActor.data.data.status.isDistracted ? -2 : 0});
-    skillModPool.push({ mod : "vulnerable", value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
-    skillModPool.push({ mod : "wounds", value : (() => { let wounds = (currentActor.data.data.wounds.value - currentActor.data.data.wounds.ignored) * -1; return wounds < -3 ? -3 : wounds ; })()});
-    skillModPool.push({ mod : "fatigue", value : (() => { let fatigue = (currentActor.data.data.fatigue.value) * -1; return fatigue < -2 ? -2 : fatigue ; })()});
+    skillModPool.push({ mod : "status", value : currentActor.calcStatusPenalties()});
+    skillModPool.push({ mod : "woundsFatigue", value : currentActor.calcWoundFatigePenalties()});
     skillModPool.push({ mod : "sizeScale", value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
+    if (attackSkillName == "Shooting") 
+    { 
+        skillModPool.push({ mod : "minStrength", value : weapon.data.data.minStr == "" ? 0 : diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) ? diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) - diceStep.indexOf(weapon.data.data.minStr) : 0});
+    }
 
     // Set Total modifications variable
     let totalMod = 0;
@@ -366,41 +382,52 @@ function commitAttack(html, attackSkillName)
         </div>
     </div>`);
 
-    // Apply damage button and listener to chatTemplate if 1+ success
-    if (successResultPool.length > 0) {
+    if (isValidConditions) {
+         // Apply damage button and listener to chatTemplate if 1+ success
+        if (successResultPool.length > 0) {
 
-        let damageButtonTemplate = $(
-            `<div style="display: flex; padding-top: 5px;">
-            <button id="callDamage"><center>Apply damage</center></button>
-            </div>`
-        );
-        
-        chatTemplate.append(damageButtonTemplate);
+            let damageButtonTemplate = $(
+                `<div style="display: flex; padding-top: 5px;">
+                <button id="callDamage"><center>Apply damage</center></button>
+                </div>`
+            );
+            
+            chatTemplate.append(damageButtonTemplate);
 
-        ;
+            ;
 
-        Hooks.once("renderChatMessage", (html, options) => { addEventListenerOnHtmlElement(options[0].querySelector("button"), 'click', (e) => { e.target.style.display = "none"; damageCalculation(weapon, successResultPool)}); });
+            Hooks.once("renderChatMessage", (html, options) => { addEventListenerOnHtmlElement(options[0].querySelector("button"), 'click', (e) => { e.target.style.display = "none"; damageCalculation(weapon, successResultPool, attackSkillName)}); });
+        }
+
+        // Displat chat template
+        // Check can use "So Nice Dices" mod effects
+        game.dice3d === undefined ? printMessage(chatTemplate[0].outerHTML) : game.dice3d.showForRoll(diceResultPool.map((el) => el.roll)).then(displayed => {
+            printMessage(chatTemplate[0].outerHTML);
+        });   
     }
-
-    // Displat chat template
-    // Check can use "So Nice Dices" mod effects
-    game.dice3d === undefined ? printMessage(chatTemplate[0].outerHTML) : game.dice3d.showForRoll(diceResultPool.map((el) => el.roll)).then(displayed => {
-        printMessage(chatTemplate[0].outerHTML);
-    });
-
 }// end commitAttack
 
 // Calcul and display damages
-function damageCalculation(weapon, successResultPool)
+function damageCalculation(weapon, successResultPool, attackSkillName)
 {
     // create a dice pool
     let diceResultPool = [];
     
     // Roll Dices
     for (let i = 0; i < successResultPool.length; i++) {
+        
+        let weaponDamage = weapon.data.data.damage;
+
+        // Downgrade weapon damage for minStr restrcitions
+        if (attackSkillName == "Fighting" && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
+        {
+            weaponDamage = "@str+1d"+currentActor.data.data.attributes.strength.die.sides;
+        }     
+
+        // Roll dices damages
         diceResultPool.push({ type: "damageRoll", 
                                 roll : new Roll(
-                                    weapon.data.data.damage.replace("@str", "1d" + currentActor.data.data.attributes.strength.die.sides + "x= +" 
+                                    weaponDamage.replace("@str", "1d" + currentActor.data.data.attributes.strength.die.sides + "x= +" 
                                     + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "")) 
                                     + "x=" + (successResultPool[i] == "Raise" ? " + 1d6x=" : "")
                                 ).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
@@ -409,6 +436,10 @@ function damageCalculation(weapon, successResultPool)
     // Prepare template
     let displayRollResultTemplate = ``;
     let targetShaken = currentTarget.data.data.status.isShaken;
+
+    // Get armor equipped
+    let armorToughness = 0;
+    currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
 
     // Create roll result template
     diceResultPool.forEach((el) => {
@@ -420,12 +451,22 @@ function damageCalculation(weapon, successResultPool)
 
         // Calcul total toughness
         let totalToughness = (parseInt(currentTarget.data.data.stats.toughness.value) 
-                            + parseInt(currentTarget.data.data.stats.toughness.armor) 
-                            + parseInt(currentTarget.data.data.stats.toughness.modifier)
-                            - parseInt(weapon.data.data.ap));
+                            + (parseInt(weapon.data.data.ap) > parseInt(armorToughness) ? 0 : parseInt(armorToughness) - parseInt(weapon.data.data.ap))
+                            + parseInt(currentTarget.data.data.stats.toughness.modifier));
+
+        // FOR VERSION OF SWADE SYSTEM WITH ARMOR IMPROVMENT
+        // let totalToughness = (parseInt(currentTarget.data.data.stats.toughness.value) 
+        //                     + (parseInt(weapon.data.data.ap) > parseInt(currentTarget.data.data.stats.toughness.armor) ? 0 : parseInt(currentTarget.data.data.stats.toughness.armor) - parseInt(weapon.data.data.ap))
+        //                     + parseInt(currentTarget.data.data.stats.toughness.modifier));
         
+        console.log(totalToughness);
+
         // Check if roll is better that toughness
         if (el.roll.total >= totalToughness) {
+       
+            // Calcul wounds
+            let wounds = Math.floor(((el.roll.total - totalToughness) / 4)) + (targetShaken ? 1 : 0);
+
             if (!targetShaken) {
                 targetShaken = true;
                 displayRollResultTemplate +=
@@ -433,9 +474,6 @@ function damageCalculation(weapon, successResultPool)
                         <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255,215,0, 0.35);"><label title="" style="color: white;">Shaken</label></div>
                     </div>`; 
             }
-            
-            // Calcul wounds
-            let wounds = Math.floor(((el.roll.total - totalToughness) / 4)) + (targetShaken ? 1 : 0);
             
             if (wounds > 0)
             {
@@ -468,6 +506,7 @@ function damageCalculation(weapon, successResultPool)
             <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center;">
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>AP : </span><span>${ weapon.data.data.ap }</span></div>
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Toughness : </span><span> ${ currentTarget.data.data.stats.toughness.value }</span></div>
+                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Armor : </span><span> ${ armorToughness }</span></div>
             </div>
             <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center; margin-bottom: 10px;">
                 <div style="display: flex; flex-wrap: wrap;">
