@@ -239,6 +239,53 @@ function rangedAttackForm(){
     
 } // end rangedAttackForm
 
+// Settings for damage outpout
+function damageSettings(params, eventTarget)
+{
+    let template = `
+    <div><p style="text-align: center">Apply some settings for damage roll</p></div>
+    <div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-between">
+        <div style="padding: 0px 0px 5px 0px">
+            <label for="coverBonus" style="display: inline-block; width: 200px">Obstacle armor bonus : </label>
+            <select id="coverBonus" style="width: 50px;">
+                <option value="0">0</option>    
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <option value="8">8</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+        <div style="padding: 0px 0px 5px 0px">
+            <label for="damageMod" style="display: inline-block; width: 200px">Damage modification : </label>
+            <input id="damageMod" style="width: 50px;" type="number" value="0" />
+        </div>
+        <div style="padding: 0px 0px 5px 0px">
+            <label for="isGrettyDamage" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">Apply gritty damage : </label>
+            <input id="isGrettyDamage" style="width: 43px; height: 15px;" type="checkbox" />
+        </div>
+    </div>`;
+    
+    new Dialog({
+        title: "Damage Settings",
+        content: template,
+        buttons: {
+            ok: {
+            label: "Confirm",
+            callback: async (html) => {
+                eventTarget.style.display = "none";
+                params.html = html;
+                damageCalculation(params);
+            },
+            },
+            cancel: {
+            label: "Cancel",
+            },
+        },
+        default: "ok",
+    },{ width: 400 }).render(true);    
+} //end damageSettings
+
 //Attack process
 function commitAttack(params)
 {
@@ -416,15 +463,15 @@ function commitAttack(params)
             );
         
             chatTemplate.append(bennieButtonTemplate);
+
+            // Add event to chat message html element
+            addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
+                e.target.style.display = "none"; 
+                params.bennieUsed = true;
+                commitAttack(params);
+            }); 
         }
         
-        // Add event to chat message html element
-        addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
-            e.target.style.display = "none"; 
-            params.bennieUsed = true;
-            commitAttack(params);
-        }); 
-
          // Apply damage button and listener to chatTemplate if 1+ success
         if (successResultPool.length > 0) {
             let damageButtonTemplate = $(
@@ -437,8 +484,7 @@ function commitAttack(params)
 
             // Add event to chat message html element
             addEventListenerOnHtmlElement("#callDamageButton", 'click', (e) => { 
-                e.target.style.display = "none"; 
-                damageCalculation({weapon, successResultPool, attackSkillName});
+                damageSettings({weapon, successResultPool, attackSkillName}, e.target);
             }); 
         }
 
@@ -457,10 +503,37 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
     let successResultPool = params.successResultPool;
     let attackSkillName = params.attackSkillName;
     let bennieUsed = params.bennieUsed;
+    let html = params.html;
+
+    // SWADE rule, injury table page 95
+    let criticalInjury = [
+        { value : [ 2 ], injury : "Unmentionables", subInjury : undefined },
+        { value : [ 3, 4 ], injury : "Arm", subInjury : undefined },
+        { value : [ 5, 6, 7, 8, 9 ], injury : "Guts", subInjury : [
+            { value : [ 1, 2 ], injury : "Broken" },
+            { value : [ 3, 4 ], injury : "Battered" },
+            { value : [ 5, 6 ], injury : "Busted" }
+        ]},
+        { value : [ 10, 11 ], injury : "Leg", subInjury : undefined },
+        { value : [ 12 ], injury : "Head", subInjury : [
+            { value : [ 1, 2, 3 ], injury : "Hideous Scar" },
+            { value : [ 4, 5 ], injury : "Blinded" },
+            { value : [ 6 ], injury : "Brain Damage" }
+        ]}
+    ];
 
     // create a dice pool
     let diceResultPool = [];
     
+    // get cover bonus
+    let coverBonus = html.find("#coverBonus")[0] === undefined ? 0 : html.find("#coverBonus")[0].value;
+
+    // get isGrettyDamage parameter
+    let isGrettyDamage = html.find("#isGrettyDamage")[0] === undefined ? false : html.find("#isGrettyDamage")[0].checked ? true : false;
+
+    // get damage modification
+    let damageMod = html.find("#damageMod")[0] === undefined ? 0 : html.find("#damageMod")[0].value;
+
     // Roll Dices
     for (let i = 0; i < successResultPool.length; i++) {
         
@@ -469,7 +542,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         // Downgrade weapon damage for minStr restrcitions
         if (attackSkillName == "Fighting" && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
         {
-            weaponDamage = "@str+1d"+currentActor.data.data.attributes.strength.die.sides;
+            weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + damageMod;
         }     
 
         // Roll dices damages
@@ -478,6 +551,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
                                     weaponDamage.replace("@str", "1d" + currentActor.data.data.attributes.strength.die.sides + "x= +" 
                                     + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "")) 
                                     + "x=" + (successResultPool[i] == "Raise" ? " + 1d6x=" : "")
+                                    + " + " + damageMod
                                 ).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
     }
 
@@ -499,7 +573,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
 
         // Calcul total toughness
         let totalToughness = (parseInt(currentTarget.data.data.stats.toughness.value) 
-                            + (parseInt(weapon.data.data.ap) > parseInt(armorToughness) ? 0 : parseInt(armorToughness) - parseInt(weapon.data.data.ap))
+                            + (parseInt(weapon.data.data.ap) > (parseInt(armorToughness) + parseInt(coverBonus)) ? 0 : (parseInt(armorToughness) + parseInt(coverBonus)) - parseInt(weapon.data.data.ap))
                             + parseInt(currentTarget.data.data.stats.toughness.modifier));
 
         // FOR VERSION OF SWADE SYSTEM WITH ARMOR IMPROVMENT
@@ -514,7 +588,6 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
             let wounds = Math.floor(((el.roll.total - totalToughness) / 4)) + (targetShaken ? 1 : 0);
 
             if (!targetShaken) {
-                targetShaken = true;
                 displayRollResultTemplate +=
                     `<div style="flex: 1 0 auto;">
                         <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255,215,0, 0.35);"><label title="" style="color: white;">Shaken</label></div>
@@ -526,9 +599,24 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
                 displayRollResultTemplate +=
                         `<div style="flex: 1 0 auto;">
                             <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255, 0, 0, 0.35);"><label title="" style="color: white;">${ wounds } Wounds</label></div>
-                        </div>`;  
-            }
+                        </div>`;
                 
+                if (isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken)) {
+
+                    let roll1 =new Roll("2d6").roll().total;
+                    let roll2 =new Roll("1d6").roll().total;
+                    
+                    let injury = criticalInjury.find((el) => el.value.includes(roll1));
+                    let subInjury =  injury.subInjury != undefined ? injury.subInjury.find((el) => el.value.includes(roll2)) : undefined;
+
+                    displayRollResultTemplate +=
+                        `<div style="flex: 1 0 auto;">
+                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px;"><label title="" style="color: white;">${ subInjury == undefined ? injury.injury : subInjury.injury }</label></div>
+                        </div>`;
+                }
+            }
+             
+            targetShaken = true;
         }else{
             displayRollResultTemplate += 
                 `<div style="flex: 1 0 auto;">
@@ -550,10 +638,11 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
                 </div>
             </div>
             ${ bennieUsed ? `<p style="text-align: center"><b>One bennie used for reroll damage</b></p>` : "" }
-            <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center;">
-                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>AP : </span><span>${ weapon.data.data.ap }</span></div>
-                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Toughness : </span><span> ${ currentTarget.data.data.stats.toughness.value }</span></div>
-                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Armor : </span><span> ${ armorToughness }</span></div>
+            <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center; flex-wrap: wrap;">
+                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>AP : </span><span>${ weapon.data.data.ap }</span></div>
+                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="${ "armor : " + armorToughness + "\n" + "cover : " + coverBonus }"><span>Armor : </span><span> ${ (armorToughness + parseInt(coverBonus)) }</span></div>
+                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>Toughness : </span><span> ${ currentTarget.data.data.stats.toughness.value }</span></div>
+                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>Damage mod : </span><span>${ damageMod }</span></div>
             </div>
             <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center; margin-bottom: 10px;">
                 <div style="display: flex; flex-wrap: wrap;">
