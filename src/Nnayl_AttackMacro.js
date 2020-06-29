@@ -70,8 +70,12 @@ function printMessage(message) {
     );
 } // end  printMessage
 
+// Add EventListener to a html element
 function addEventListenerOnHtmlElement(element, event, func){
-    element.addEventListener(event, func);
+    // Use Hook to add event to chat message html element
+    Hooks.once("renderChatMessage", (chatItem, html) => { 
+        html[0].querySelector(element).addEventListener(event, func);
+    });
 } // end addEventListenerOnHtmlElement
 
 // melee attack form
@@ -128,7 +132,7 @@ function meleeAttackForm(){
                 ok: {
                     label: "Attack",
                     callback: async (html) => {
-                    commitAttack(html, "Fighting");
+                    commitAttack({ html, attackSkillName : "Fighting" });
                     },
                 },
                 cancel: {
@@ -222,7 +226,7 @@ function rangedAttackForm(){
                 ok: {
                 label: "Attaquer",
                 callback: async (html) => {
-                    commitAttack(html, "Shooting");
+                    commitAttack({ html, attackSkillName : "Shooting" });
                 },
                 },
                 cancel: {
@@ -236,8 +240,15 @@ function rangedAttackForm(){
 } // end rangedAttackForm
 
 //Attack process
-function commitAttack(html, attackSkillName)
+function commitAttack(params)
 {
+
+    let html = params.html;
+    let attackSkillName = params.attackSkillName;
+    let bennieUsed = params.bennieUsed;
+
+    console.log(bennieUsed);
+
     //SWADE rules for how much ammo is expended per RoF
     let rofAmmo = { 1: 1, 2: 5, 3: 10, 4: 20, 5: 40, 6: 50 };
     
@@ -330,7 +341,8 @@ function commitAttack(html, attackSkillName)
     });
 
     // Check if critical failure !
-    if ((diceResultPool.filter((el) => el.roll.total == 1).length > (diceResultPool.length / 2)) && (!currentActor.data.data.wildcard || diceResultPool.find((el) => el.type == "wildRoll" && el.roll.total == 1) !== undefined)){
+    let criticalFailure = (diceResultPool.filter((el) => el.roll.total == 1).length > (diceResultPool.length / 2)) && (!currentActor.data.data.wildcard || diceResultPool.find((el) => el.type == "wildRoll" && el.roll.total == 1) !== undefined);
+    if (criticalFailure){
         displaySuccessResultTemplate += 
         `<div style="flex: 1 0 auto;">
             <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : rgb(255, 0, 0, 0.35)"><label style="color : rgb(200, 0, 0);">!! Critical Failure !!</label></div>
@@ -366,6 +378,7 @@ function commitAttack(html, attackSkillName)
         </div>
         ${ attackSkillName == "Shooting" ? `<p><i><b>${ rofAmmo[numAttack] }</b> ammo used</i></p>` : "" }
         <p><i>Notes : ${weapon.data.data.notes}</i></p>
+        ${ bennieUsed ? `<p style="text-align: center"><b>One bennie used for reroll attack</b></p>` : "" }
         <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center;">
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Diff. : </span><span>${ attackSkillName == "Shooting" ? "4" : currentTarget.data.data.stats.parry.value }</span></div>
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;" title="${ skillModPool.map((el) => el.mod + " : " + el.value).join("\n") }"><span>Mod : </span><span>${totalMod}</span></div>
@@ -391,28 +404,42 @@ function commitAttack(html, attackSkillName)
             </div>
         </div>
     </div>`);
-
+    
     if (isValidConditions) {
+
+        // Apply bennie button and listener to chatTemplate if not critical failure
+        if (!criticalFailure) {
+            let bennieButtonTemplate = $(
+                `<div style="display: flex; padding-top: 5px;">
+                <button id="reRollButton"><center>Reroll with a Bennie</center></button>
+                </div>`
+            );
+        
+            chatTemplate.append(bennieButtonTemplate);
+        }
+        
+        // Add event to chat message html element
+        addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
+            e.target.style.display = "none"; 
+            params.bennieUsed = true;
+            commitAttack(params);
+        }); 
+
          // Apply damage button and listener to chatTemplate if 1+ success
         if (successResultPool.length > 0) {
-
             let damageButtonTemplate = $(
                 `<div style="display: flex; padding-top: 5px;">
-                <button id="callDamage"><center>Apply damage</center></button>
+                <button id="callDamageButton"><center>Apply damage</center></button>
                 </div>`
             );
             
             chatTemplate.append(damageButtonTemplate);
 
-            ;
-
-            // Use Hook to add event to chat message html element
-            Hooks.once("renderChatMessage", (chatItem, html) => { 
-                addEventListenerOnHtmlElement(html[0].querySelector("button"), 'click', (e) => { 
-                    e.target.style.display = "none"; 
-                    damageCalculation({weapon, successResultPool, attackSkillName})
-                }); 
-            });
+            // Add event to chat message html element
+            addEventListenerOnHtmlElement("#callDamageButton", 'click', (e) => { 
+                e.target.style.display = "none"; 
+                damageCalculation({weapon, successResultPool, attackSkillName});
+            }); 
         }
 
         // Displat chat template
@@ -429,6 +456,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
     let weapon = params.weapon;
     let successResultPool = params.successResultPool;
     let attackSkillName = params.attackSkillName;
+    let bennieUsed = params.bennieUsed;
 
     // create a dice pool
     let diceResultPool = [];
@@ -521,6 +549,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
                     <span>Attack with weapon <b>${weapon.data.name}</b> hit the target <b>${currentTarget.data.name}</b></span>
                 </div>
             </div>
+            ${ bennieUsed ? `<p style="text-align: center"><b>One bennie used for reroll damage</b></p>` : "" }
             <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center;">
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>AP : </span><span>${ weapon.data.data.ap }</span></div>
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Toughness : </span><span> ${ currentTarget.data.data.stats.toughness.value }</span></div>
@@ -538,6 +567,22 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
             </div>
         </div>`
     );
+
+    // Apply bennie button and listener to chatTemplate if not critical failure
+    let bennieButtonTemplate = $(
+        `<div style="display: flex; padding-top: 5px;">
+        <button id="reRollButton"><center>Reroll with a Bennie</center></button>
+        </div>`
+    );
+
+    chatTemplate.append(bennieButtonTemplate);
+    
+    // Add event to chat message html element
+    addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
+        e.target.style.display = "none"; 
+        params.bennieUsed = true;
+        damageCalculation(params);
+    }); 
     
     // Displat chat template
     // Check can use "So Nice Dices" mod effects
