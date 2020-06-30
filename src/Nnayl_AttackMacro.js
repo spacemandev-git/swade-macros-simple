@@ -245,7 +245,7 @@ function damageSettings(params, eventTarget)
     let template = `
     <div><p style="text-align: center">Apply some settings for damage roll</p></div>
     <div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-between">
-        <div style="padding: 0px 0px 5px 0px">
+        <div style="padding: 0px 0px 5px 0px;">
             <label for="coverBonus" style="display: inline-block; width: 200px">Obstacle armor bonus : </label>
             <select id="coverBonus" style="width: 50px;">
                 <option value="0">0</option>    
@@ -256,11 +256,15 @@ function damageSettings(params, eventTarget)
                 <option value="10">10</option>
             </select>
         </div>
-        <div style="padding: 0px 0px 5px 0px">
+        <div style="padding: 0px 0px 5px 0px;">
+            <label for="ignoreArmor" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">Ignore target armor : </label>
+            <input id="ignoreArmor" style="width: 43px; height: 15px;" type="checkbox" />
+        </div>
+        <div style="padding: 0px 0px 5px 0px;">
             <label for="damageMod" style="display: inline-block; width: 200px">Damage modification : </label>
             <input id="damageMod" style="width: 50px;" type="number" value="0" />
         </div>
-        <div style="padding: 0px 0px 5px 0px">
+        <div style="padding: 0px 0px 5px 0px;">
             <label for="isGrettyDamage" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">Apply gritty damage : </label>
             <input id="isGrettyDamage" style="width: 43px; height: 15px;" type="checkbox" />
         </div>
@@ -283,7 +287,7 @@ function damageSettings(params, eventTarget)
             },
         },
         default: "ok",
-    },{ width: 400 }).render(true);    
+    },{ width: 540 }).render(true);    
 } //end damageSettings
 
 //Attack process
@@ -534,6 +538,9 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
     // get damage modification
     let damageMod = html.find("#damageMod")[0] === undefined ? 0 : html.find("#damageMod")[0].value;
 
+    // get ignore armor
+    let ignoreAmor = html.find("#ignoreArmor")[0] === undefined ? false : html.find("#ignoreArmor")[0].checked ? true : false;
+
     // Roll Dices
     for (let i = 0; i < successResultPool.length; i++) {
         
@@ -561,7 +568,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
 
     // Get armor equipped
     let armorToughness = 0;
-    currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
+    if (!ignoreAmor) currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
 
     // Create roll result template
     diceResultPool.forEach((el) => {
