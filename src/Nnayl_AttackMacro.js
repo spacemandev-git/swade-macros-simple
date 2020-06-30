@@ -1,5 +1,3 @@
-// Macro version 1.0.1
-
 let isValidConditions = true;
 let diceStep = ["d4", "d6", "d8", "d10", "d12"];
 let currentActor;

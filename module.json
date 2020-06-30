@@ -3,7 +3,7 @@
   "title": "swade-macros-simple",
   "description": "A set of automation macros for SWADE",
   "systems": ["swade"],
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "spacemandev",
   "scripts": [],
   "packs": [
@@ -20,5 +20,5 @@
   "minimumCoreVersion": "0.6.0",
   "compatibleCoreVersion": "0.6.4",
   "manifest": "https://raw.githubusercontent.com/Brownie79/swade-macros-simple/master/module.json",
-  "download": "https://github.com/Brownie79/swade-macros-simple/archive/v1.2.0.zip"
+  "download": "https://github.com/Brownie79/swade-macros-simple/archive/v1.2.1.zip"
 }
