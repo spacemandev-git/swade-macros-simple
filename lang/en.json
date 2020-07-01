@@ -1,0 +1,10 @@
+{
+    "swadeMacro.ui.notification.needActor" : "To attack you need to select a token",
+    "swadeMacro.ui.notification.actorShaken" : "You are shaken, you can't attack",
+    "swadeMacro.ui.notification.needTarget" : "To attack you need to select a target",
+
+    "swadeMacro.combatDialog.title": "Combat",
+    "swadeMacro.combatDialog.content": "Please, choose one attack type",
+    "swadeMacro.combatDialog.meleeButton": "Melee",
+    "swadeMacro.combatDialog.rangeButton": "Range"
+}

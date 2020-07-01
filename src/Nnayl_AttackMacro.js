@@ -4,7 +4,7 @@ let currentActor;
 
 //Uses the selected actor to figure out guns
 if (canvas.tokens.controlled.length != 1) {
-    ui.notifications.warn("To attack you need to select a token");
+    ui.notifications.warn(i18n("swadeMacro.ui.notification.needActor"));
     isValidConditions = false;
 }else{
     // Set Actor
@@ -12,46 +12,60 @@ if (canvas.tokens.controlled.length != 1) {
 
     // Check shaken state
     if (currentActor.data.data.status.isShaken) {
-        ui.notifications.warn("You are shaken, you can't attack");
+        ui.notifications.warn(i18n("swadeMacro.ui.notification.actorShaken"));
         isValidConditions = false;
     }
 }
 
 // Check target selected
 if (Array.from(game.user.targets).length != 1) {
-    ui.notifications.warn("To attack you need to select a target");
+    ui.notifications.warn(i18n("swadeMacro.ui.notification.needTarget"));
     isValidConditions = false;
 }
 
 let currentTarget;
 let weapons;
 
-// Attack type choice
-if (isValidConditions) {
-        // Set actor target
-    currentTarget = Array.from(game.user.targets)[0].actor;
+function i18n(key) {
+    return game.i18n.localize(key);
+}
 
-    // Set weapons list
-    weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
+openDialogCombat();
 
-    new Dialog({
-        title: "Combat",
-        content: `<div style="padding: 10px 0px 10px 0px;"><center><i>Please, choose one attack type</i></center></div>`,
-        buttons: {
-            contact: {
-                label: "Melee",
-                callback: async (html) => {
-                    meleeAttackForm(html);
+async function openDialogCombat()
+{
+    // Attack type choice
+    if (isValidConditions) {
+            // Set actor target
+        currentTarget = Array.from(game.user.targets)[0].actor;
+    
+        // Set weapons list
+        
+        weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
+    
+        let template = await renderTemplate(`modules/swade-macros-simple-localization/templates/dialog-combat.html`);
+    
+        console.log(template);
+    
+        new Dialog({
+            title: i18n("swadeMacro.combatDialog.title"),
+            content: template,
+            buttons: {
+                contact: {
+                    label: i18n("swadeMacro.combatDialog.meleeButton"),
+                    callback: async (html) => {
+                        meleeAttackForm(html);
+                    },
                 },
+                ranged: {
+                    label: i18n("swadeMacro.combatDialog.rangeButton"),
+                    callback: async (html) => {
+                        rangedAttackForm(html);
+                    },
+                }
             },
-            ranged: {
-                label: "Range",
-                callback: async (html) => {
-                    rangedAttackForm(html);
-                },
-            }
-        },
-    }, { width: 400 }).render(true);
+        }, { width: 400 }).render(true);
+    }
 }
 
 //Utility function for printing things to chat
@@ -295,8 +309,6 @@ function commitAttack(params)
     let html = params.html;
     let attackSkillName = params.attackSkillName;
     let bennieUsed = params.bennieUsed;
-
-    console.log(bennieUsed);
 
     //SWADE rules for how much ammo is expended per RoF
     let rofAmmo = { 1: 1, 2: 5, 3: 10, 4: 20, 5: 40, 6: 50 };
