@@ -296,8 +296,6 @@ function commitAttack(params)
     let attackSkillName = params.attackSkillName;
     let bennieUsed = params.bennieUsed;
 
-    console.log(bennieUsed);
-
     //SWADE rules for how much ammo is expended per RoF
     let rofAmmo = { 1: 1, 2: 5, 3: 10, 4: 20, 5: 40, 6: 50 };
     
@@ -554,8 +552,8 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         diceResultPool.push({ type: "damageRoll", 
                                 roll : new Roll(
                                     weaponDamage.replace("@str", "1d" + currentActor.data.data.attributes.strength.die.sides + "x= +" 
-                                    + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "")) 
-                                    + "x=" + (successResultPool[i] == "Raise" ? " + 1d6x=" : "")
+                                    + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "" + "x=")) 
+                                    + (successResultPool[i] == "Raise" ? " + 1d6x=" : "")
                                     + " + " + damageMod
                                 ).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
     }
