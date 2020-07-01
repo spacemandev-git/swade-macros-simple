@@ -559,17 +559,23 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         // Downgrade weapon damage for minStr restrcitions
         if (attackSkillName == "Fighting" && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
         {
-            weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + damageMod;
+            weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "");
         }     
 
+        // Update @str from Strenght dice
+        let regexStr = /[@]str/g;
+        weaponDamage = weaponDamage.replace(regexStr, "1d" + currentActor.data.data.attributes.strength.die.sides)
+
+        // Add Raise
+        weaponDamage += (successResultPool[i] == "Raise" ? " + 1d6" : "")
+        weaponDamage += " + " + damageMod;
+
+        // Explode all dices
+        let regexDiceExplode = /[0-9]d[0-9]{1,2}/g;
+        weaponDamage.replace(regexDiceExplode, "$&x=");
+
         // Roll dices damages
-        diceResultPool.push({ type: "damageRoll", 
-                                roll : new Roll(
-                                    weaponDamage.replace("@str", "1d" + currentActor.data.data.attributes.strength.die.sides + "x= +" 
-                                    + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "")) 
-                                    + "x=" + (successResultPool[i] == "Raise" ? " + 1d6x=" : "")
-                                    + " + " + damageMod
-                                ).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
+        diceResultPool.push({ type: "damageRoll", roll : new Roll(weaponDamage).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
     }
 
     // Prepare template
