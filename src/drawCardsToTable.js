@@ -46,13 +46,16 @@ async function makeTiles(html) {
       .drawMany(cardsToDraw)
   ).results;
 
+  let centerX = game.scenes.active.data.width / 2;
+  let centerY = game.scenes.active.data.height / 2;
+
   for (let i = 0; i < cardsToDraw; i++) {
     await Tile.create({
       img: cardDraws[i].img,
       width: _width,
       height: _height,
-      x: 1000,
-      y: 1000,
+      x: centerX,
+      y: centerY,
     });
   }
 }
