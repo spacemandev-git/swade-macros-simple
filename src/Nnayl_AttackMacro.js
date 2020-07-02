@@ -30,42 +30,41 @@ function i18n(key) {
     return game.i18n.localize(key);
 }
 
-openDialogCombat();
+if (isValidConditions) openDialogCombat();
 
+// Attack type choice
 async function openDialogCombat()
-{
-    // Attack type choice
-    if (isValidConditions) {
-            // Set actor target
-        currentTarget = Array.from(game.user.targets)[0].actor;
+{   
+    // Set actor target
+    currentTarget = Array.from(game.user.targets)[0].actor;
+
+    // Set weapons list
     
-        // Set weapons list
-        
-        weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
-    
-        let template = await renderTemplate(`modules/swade-macros-simple-localization/templates/dialog-combat.html`);
-    
-        console.log(template);
-    
-        new Dialog({
-            title: i18n("swadeMacro.combatDialog.title"),
-            content: template,
-            buttons: {
-                contact: {
-                    label: i18n("swadeMacro.combatDialog.meleeButton"),
-                    callback: async (html) => {
-                        meleeAttackForm(html);
-                    },
+    weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
+
+    let template = await renderTemplate(`modules/swade-macros-simple-localization/templates/dialog-combat.html`);
+
+    console.log(template);
+
+    new Dialog({
+        title: i18n("swadeMacro.combatDialog.title"),
+        content: template,
+        buttons: {
+            contact: {
+                label: i18n("swadeMacro.combatDialog.meleeButton"),
+                callback: async (html) => {
+                    meleeAttackForm(html);
                 },
-                ranged: {
-                    label: i18n("swadeMacro.combatDialog.rangeButton"),
-                    callback: async (html) => {
-                        rangedAttackForm(html);
-                    },
-                }
             },
-        }, { width: 400 }).render(true);
-    }
+            ranged: {
+                label: i18n("swadeMacro.combatDialog.rangeButton"),
+                callback: async (html) => {
+                    rangedAttackForm(html);
+                },
+            }
+        },
+    }, { width: 400 }).render(true);
+    
 }
 
 //Utility function for printing things to chat
@@ -134,7 +133,7 @@ function meleeAttackForm(){
     <div style="padding: 0px 0px 5px 0px; text-align: center;">
         <i><label>Status and size scale are automated</label></i>
     </div>`;
-  
+
     if (isValidConditions) {
         // Show form
         new Dialog({
@@ -224,11 +223,23 @@ function rangedAttackForm(){
             <label for="isUnstable" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">Unstable : </label>
             <input id="isUnstable" style="width: 43px; height: 15px;" type="checkbox" />
         </div>
+        <div style="padding: 0px 0px 5px 0px">
+            <label for="doubleTap" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">Double tap (Edge) : </label>
+            <input id="doubleTap" style="width: 43px; height: 15px;" type="checkbox" />
+        </div>
+        <div style="padding: 0px 0px 5px 0px">
+            <label for="threeRoundBurst" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">Three round burst : </label>
+            <input id="threeRoundBurst" style="width: 43px; height: 15px;" type="checkbox" />
+        </div>
+        <div style="padding: 0px 0px 5px 0px">
+            <label for="trackAmmo" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">Track ammo consumption : </label>
+            <input id="trackAmmo" style="width: 43px; height: 15px;" type="checkbox" checked />
+        </div>
     </div>
     <div style="padding: 0px 0px 5px 0px; text-align: center;">
         <i><label>Status and size scale are automated</label></i>
     </div>`;
-    
+
     // Show form
     if (isValidConditions) {
         new Dialog({
@@ -248,7 +259,7 @@ function rangedAttackForm(){
             default: "ok",
         },{ width: 550 }).render(true);
     }
-    
+
 } // end rangedAttackForm
 
 // Settings for damage outpout
@@ -281,7 +292,7 @@ function damageSettings(params, eventTarget)
             <input id="isGrettyDamage" style="width: 43px; height: 15px;" type="checkbox" />
         </div>
     </div>`;
-    
+
     new Dialog({
         title: "Damage Settings",
         content: template,
@@ -310,9 +321,11 @@ function commitAttack(params)
     let attackSkillName = params.attackSkillName;
     let bennieUsed = params.bennieUsed;
 
+    let ammoUsed = 0;
+
     //SWADE rules for how much ammo is expended per RoF
     let rofAmmo = { 1: 1, 2: 5, 3: 10, 4: 20, 5: 40, 6: 50 };
-    
+
     //SWADE rules SizeScale
     let sizeScale = [
         {size: -4, mod : -6}, {size: -3, mod : -4}, {size: -2, mod : -2}, {size: -1, mod : 0},
@@ -321,32 +334,48 @@ function commitAttack(params)
         {size: 8, mod : 4}, {size: 9, mod : 4}, {size: 10, mod : 4}, {size: 11, mod : 4},
         {size: 12, mod : 6}, {size: 13, mod : 6}, {size: 14, mod : 6}, {size: 15, mod : 6},
         {size: 16, mod : 6}, {size: 17, mod : 6}, {size: 18, mod : 6}, {size: 19, mod : 6}, {size: 20, mod : 6}
-      ];
+    ];
 
-    
+
     // Get weapon selected
     let weapon = weapons.find((el) => el.name == html.find("#selectedWeapon")[0].value);
 
     // Get number of attack if a ranged attack or set to 1 for melee attack
-    let numAttack = html.find("#selectedRoF")[0] === undefined ? 1 : html.find("#selectedRoF")[0].value;
+    let nbAttack = html.find("#selectedRoF")[0] === undefined ? 1 : html.find("#selectedRoF")[0].value;
 
     // Get skill need for attack
     let attackSkill = currentActor.items.find((el) => el.data.name == attackSkillName);
-    
+
+    // Get Track ammo setting
+    let trackAmmo = html.find("#trackAmmo")[0] === undefined ? 0 : html.find("#trackAmmo")[0].checked ? -2 : 0;
+
+    // Get double Tap option
+    let doubleTapEdge = html.find("#doubleTap")[0] === undefined ? 0 : html.find("#doubleTap")[0].checked ? 1 : 0;
+
+    // Get three round burst ability
+    let threeRoundBurstAbility = html.find("#threeRoundBurst")[0] === undefined ? 0 : html.find("#threeRoundBurst")[0].checked ? 1 : 0;
+
+    // Set nbAttack for his special abilities
+    if (doubleTapEdge || threeRoundBurstAbility) nbAttack = 1
+
     // Simulate unskilled skill when the attack skill is not found
     if (attackSkill === null) attackSkill = { data : { data : { die : { sides : 4, modifier: -2 }, "wild-die" : { sides : 6 }  } } };
-    
+
     //Some check for Ranged Attack
     if (attackSkillName == "Shooting") {
+        ammoUsed = rofAmmo[nbAttack];
+
+        if (threeRoundBurstAbility) ammoUsed = 3;
+        if (doubleTapEdge) ammoUsed * 2;
 
         // Check RoF
-        if ((numAttack > weapon.data.data.rof)) {
+        if ((nbAttack > weapon.data.data.rof)) {
             ui.notifications.warn("You need to select a valid RoF for your weapon");
             isValidConditions = false;
         };
         
         // Check ammo
-        if (rofAmmo[numAttack] > weapon.data.data.shots) {
+        if (ammoUsed > weapon.data.data.shots) {
             ui.notifications.warn(`No munition for this rate of fore, you have (${weapon.data.data.shots}) ammo left`);
             isValidConditions = false;
         };
@@ -354,8 +383,8 @@ function commitAttack(params)
 
     let diceResultPool = [];
     // Roll Dices
-    for (let i = 0; i < numAttack; i++) {
-        diceResultPool.push({ type: "skillRoll", roll : new Roll("1d" + attackSkill.data.data.die.sides + "x=").roll(), saved : 1});
+    for (let i = 0; i < nbAttack; i++) {
+        diceResultPool.push({ type: "skillRoll", roll : new Roll("1d" + attackSkill.data.data.die.sides + "x=" + (attackSkill.data.data.die.modifier == "" ? "" : " + " + attackSkill.data.data.die.modifier)).roll(), saved : 1});
     }
 
     // Roll Wild for Joker
@@ -370,20 +399,22 @@ function commitAttack(params)
 
     // Build Modifiers
     let skillModPool = [];
-    skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
-    skillModPool.push({ mod : "rangePenalty", value : html.find("#rangePenalty")[0] === undefined ? 0 : parseInt(html.find("#rangePenalty")[0].value) });
-    skillModPool.push({ mod : "targetCover", value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
-    skillModPool.push({ mod : "isRecoil", value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
-    skillModPool.push({ mod : "otherMod", value : html.find("#otherMod")[0] === undefined ? 0 : parseInt(html.find("#otherMod")[0].value) });
-    skillModPool.push({ mod : "isUnstable", value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
-    skillModPool.push({ mod : "distracted", value : currentActor.data.data.status.isDistracted ? -2 : 0});
-    skillModPool.push({ mod : "vulnerable", value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
-    skillModPool.push({ mod : "woundsFatigue", value : currentActor.calcWoundFatigePenalties()});
-    skillModPool.push({ mod : "sizeScale", value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
+    //skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
+    skillModPool.push({ mod : "rangePenalty", title : "Range Penality", abilitie : 0, value : html.find("#rangePenalty")[0] === undefined ? 0 : parseInt(html.find("#rangePenalty")[0].value) });
+    skillModPool.push({ mod : "targetCover", title : "Target Cover", abilitie : 0, value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
+    skillModPool.push({ mod : "isRecoil", title : "Is Recoil", abilitie : 0, value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
+    skillModPool.push({ mod : "isUnstable", title : "Is Unstable", abilitie : 0, value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
+    skillModPool.push({ mod : "distracted", title : "Distracted", abilitie : 0, value : currentActor.data.data.status.isDistracted ? -2 : 0});
+    skillModPool.push({ mod : "vulnerable", title : "Target Vunerable", abilitie : 0, value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
+    skillModPool.push({ mod : "woundsFatigue", title : "Wounds and Fatigue", abilitie : 0, value : currentActor.calcWoundFatigePenalties()});
+    skillModPool.push({ mod : "sizeScale", title : "Size Scale", abilitie : 0, value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
+    skillModPool.push({ mod : "doubleTap", title : "Double Tap", abilitie : 1, value : doubleTapEdge ? 1 : 0 });
+    skillModPool.push({ mod : "threeRoundBurst", title : "Three Round Burst", abilitie : 1, value : threeRoundBurstAbility ? 1 : 0 });
     if (attackSkillName == "Shooting") 
     { 
-        skillModPool.push({ mod : "minStrength", value : weapon.data.data.minStr == "" ? 0 : diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) ? diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) - diceStep.indexOf(weapon.data.data.minStr) : 0});
+        skillModPool.push({ mod : "minStrength", title : "Min Strength", abilitie : 0, value : weapon.data.data.minStr == "" ? 0 : diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) ? diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) - diceStep.indexOf(weapon.data.data.minStr) : 0});
     }
+    skillModPool.push({ mod : "otherMod", title : "Other Mod", abilitie : 0, value : html.find("#otherMod")[0] === undefined ? 0 : parseInt(html.find("#otherMod")[0].value) });
 
     // Set Total modifications variable
     let totalMod = 0;
@@ -397,7 +428,7 @@ function commitAttack(params)
     diceResultPool.forEach((el) => {
         displayRollResultTemplate +=
         `<div style="flex: 1 0 auto;">
-                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "" } "><label title="" style="color: white;">${ el.roll.total }</label></div>
+                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "" }" title="${el.roll.formula }"><label style="color: white;">${ el.roll.total }</label></div>
             </div>`;
     });
 
@@ -421,7 +452,7 @@ function commitAttack(params)
             
             displaySuccessResultTemplate += 
                 `<div style="flex: 1 0 auto;">
-                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : ${ result.color }"><label title="${ el.roll.total} (${ el.roll.total + totalMod })" style="color : white;">${ result.display }</label></div>
+                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : ${ result.color }" title="${ el.roll.total} (${ el.roll.total + totalMod })"><label style="color : white;">${ result.display }</label></div>
                 </div>`;
         });
     }
@@ -437,12 +468,13 @@ function commitAttack(params)
                 <span>Attack against <b>${currentTarget.data.name}</b> with the weapon <b>${weapon.data.name}</b></span>
             </div>
         </div>
-        ${ attackSkillName == "Shooting" ? `<p><i><b>${ rofAmmo[numAttack] }</b> ammo used</i></p>` : "" }
+        ${ attackSkillName == "Shooting" ? `<p><i><b>${ ammoUsed }</b> ammo used</i></p>` : "" }
         <p><i>Notes : ${weapon.data.data.notes}</i></p>
+        <p style="font-size: 12px;"><label style="font-weight: bold;">Abilities used :</label> ${ skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", ") }</p>
         ${ bennieUsed ? `<p style="text-align: center"><b>One bennie used for reroll attack</b></p>` : "" }
         <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center;">
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Diff. : </span><span>${ attackSkillName == "Shooting" ? "4" : currentTarget.data.data.stats.parry.value }</span></div>
-                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;" title="${ skillModPool.map((el) => el.mod + " : " + el.value).join("\n") }"><span>Mod : </span><span>${totalMod}</span></div>
+                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;" title="${ skillModPool.filter((el) => el.value != 0).map((el) => el.title + " : " + el.value).join("\n") }"><span>Mod : </span><span>${totalMod}</span></div>
         </div>
         <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center;">
             <div style="display: flex; flex-wrap: wrap;">
@@ -465,7 +497,7 @@ function commitAttack(params)
             </div>
         </div>
     </div>`);
-    
+
     if (isValidConditions) {
 
         // Apply bennie button and listener to chatTemplate if not critical failure
@@ -486,7 +518,7 @@ function commitAttack(params)
             }); 
         }
         
-         // Apply damage button and listener to chatTemplate if 1+ success
+        // Apply damage button and listener to chatTemplate if 1+ success
         if (successResultPool.length > 0) {
             let damageButtonTemplate = $(
                 `<div style="display: flex; padding-top: 5px;">
@@ -498,13 +530,20 @@ function commitAttack(params)
 
             // Add event to chat message html element
             addEventListenerOnHtmlElement("#callDamageButton", 'click', (e) => { 
-                damageSettings({weapon, successResultPool, attackSkillName}, e.target);
+                damageSettings({weapon, successResultPool, attackSkillName, doubleTapEdge, threeRoundBurstAbility}, e.target);
             }); 
         }
+
+        // Remove ammo from weapon
+        if (attackSkillName == "Shooting" && trackAmmo) {
+            let newShots = (weapon.data.data.shots -= ammoUsed);
+            weapon.update({ "data.shots": newShots });
+        };
 
         // Displat chat template
         // Check can use "So Nice Dices" mod effects
         game.dice3d === undefined ? printMessage(chatTemplate[0].outerHTML) : game.dice3d.showForRoll(diceResultPool.map((el) => el.roll)).then(displayed => {
+            
             printMessage(chatTemplate[0].outerHTML);
         });   
     }
@@ -518,6 +557,8 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
     let attackSkillName = params.attackSkillName;
     let bennieUsed = params.bennieUsed;
     let html = params.html;
+    let doubleTapEdge = params.doubleTapEdge;
+    let threeRoundBurstAbility = params.threeRoundBurstAbility;
 
     // SWADE rule, injury table page 95
     let criticalInjury = [
@@ -536,20 +577,28 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         ]}
     ];
 
+    let damageModPool = [];
+
     // create a dice pool
     let diceResultPool = [];
-    
+
     // get cover bonus
     let coverBonus = html.find("#coverBonus")[0] === undefined ? 0 : html.find("#coverBonus")[0].value;
 
     // get isGrettyDamage parameter
     let isGrettyDamage = html.find("#isGrettyDamage")[0] === undefined ? false : html.find("#isGrettyDamage")[0].checked ? true : false;
 
-    // get damage modification
-    let damageMod = html.find("#damageMod")[0] === undefined ? 0 : html.find("#damageMod")[0].value;
-
     // get ignore armor
     let ignoreAmor = html.find("#ignoreArmor")[0] === undefined ? false : html.find("#ignoreArmor")[0].checked ? true : false;
+
+    // get damage modification
+    if (doubleTapEdge) damageModPool.push({ mod : "doubleTap", title : "Double Tap", abilitie : 0, value : 1});
+    if (threeRoundBurstAbility) damageModPool.push({ mod : "threeRoundBurst", title : "Three Round Burst", abilitie : 0, value : 1});
+    damageModPool.push({ mod : "otherMod", title : "Other Mod", abilitie : 0, value : html.find("#damageMod")[0] === undefined ? 0 : parseInt(html.find("#damageMod")[0].value)});
+
+    // Set Total damage variables
+    let totalDamageMod = 0;
+    damageModPool.forEach((el) =>  totalDamageMod += el.value );
 
     // Roll Dices
     for (let i = 0; i < successResultPool.length; i++) {
@@ -568,11 +617,11 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
 
         // Add Raise
         weaponDamage += (successResultPool[i] == "Raise" ? " + 1d6" : "")
-        weaponDamage += " + " + damageMod;
+        weaponDamage += " + " + totalDamageMod;
 
         // Explode all dices
-        let regexDiceExplode = /[0-9]d[0-9]{1,2}/g;
-        weaponDamage.replace(regexDiceExplode, "$&x=");
+        let regexDiceExplode = /d[0-9]{1,2}/g;
+        weaponDamage = weaponDamage.replace(regexDiceExplode, "$&x=");
 
         // Roll dices damages
         diceResultPool.push({ type: "damageRoll", roll : new Roll(weaponDamage).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
@@ -591,7 +640,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         displayRollResultTemplate += `<div style="display: flex; flex-wrap: wrap; font-size: 16px; font-weight: bold">`;
         displayRollResultTemplate +=
             `<div style="flex: 0 0 50px;">
-                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.raise ? "background-color: rgb(0, 200, 0, 0.35);" : "" } "><label title="${ el.roll.formula + "\n" + el.roll.result }" style="color: white;">${ el.roll.total }</label></div>
+                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.raise ? "background-color: rgb(0, 200, 0, 0.35);" : "" } "  title="${ el.roll.formula + "\n" + el.roll.result }" ><label style="color: white;">${ el.roll.total }</label></div>
             </div>`;
 
         // Calcul total toughness
@@ -606,14 +655,14 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         
         // Check if roll is better that toughness
         if (el.roll.total >= totalToughness) {
-       
+    
             // Calcul wounds
             let wounds = Math.floor(((el.roll.total - totalToughness) / 4)) + (targetShaken ? 1 : 0);
 
             if (!targetShaken) {
                 displayRollResultTemplate +=
                     `<div style="flex: 1 0 auto;">
-                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255,215,0, 0.35);"><label title="" style="color: white;">Shaken</label></div>
+                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255,215,0, 0.35);" title=">= ${ totalToughness }"><label style="color: white;">Shaken</label></div>
                     </div>`; 
             }
             
@@ -621,7 +670,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
             {
                 displayRollResultTemplate +=
                         `<div style="flex: 1 0 auto;">
-                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255, 0, 0, 0.35);"><label title="" style="color: white;">${ wounds } Wounds</label></div>
+                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255, 0, 0, 0.35);" title=">=${ (totalToughness + (wounds * 4)) }"><label style="color: white;">${ wounds } Wounds</label></div>
                         </div>`;
                 
                 if (isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken)) {
@@ -634,16 +683,16 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
 
                     displayRollResultTemplate +=
                         `<div style="flex: 1 0 auto;">
-                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px;"><label title="" style="color: white;">${ subInjury == undefined ? injury.injury : subInjury.injury }</label></div>
+                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px;"><label style="color: white;" title="${ roll1 } ${ injury.subInjury != undefined ? "->" + roll2 : ""}">${ subInjury == undefined ? injury.injury : subInjury.injury }</label></div>
                         </div>`;
                 }
             }
-             
+            
             targetShaken = true;
         }else{
             displayRollResultTemplate += 
                 `<div style="flex: 1 0 auto;">
-                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(0, 0, 255, 0.35);"><label title="" style="color: white;">Hold</label></div>
+                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(0, 0, 255, 0.35);" title="< ${ totalToughness }"><label style="color: white;">No Damage</label></div>
                 </div>`;
         }
         displayRollResultTemplate += `</div>`;
@@ -665,7 +714,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
                 <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>AP : </span><span>${ weapon.data.data.ap }</span></div>
                 <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="${ "armor : " + armorToughness + "\n" + "cover : " + coverBonus }"><span>Armor : </span><span> ${ (armorToughness + parseInt(coverBonus)) }</span></div>
                 <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>Toughness : </span><span> ${ currentTarget.data.data.stats.toughness.value }</span></div>
-                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>Damage mod : </span><span>${ damageMod }</span></div>
+                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="${ damageModPool.map((el) => el.title + " : " + el.value).join("\n") }"><span>Damage mod : </span><span>${ totalDamageMod }</span></div>
             </div>
             <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center; margin-bottom: 10px;">
                 <div style="display: flex; flex-wrap: wrap;">
@@ -688,14 +737,14 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
     );
 
     chatTemplate.append(bennieButtonTemplate);
-    
+
     // Add event to chat message html element
     addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
         e.target.style.display = "none"; 
         params.bennieUsed = true;
         damageCalculation(params);
     }); 
-    
+
     // Displat chat template
     // Check can use "So Nice Dices" mod effects
     game.dice3d === undefined ? printMessage(chatTemplate[0].outerHTML) : game.dice3d.showForRoll(diceResultPool.map((el) => el.roll)).then(displayed => {
