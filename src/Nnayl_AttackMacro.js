@@ -341,7 +341,7 @@ function commitAttack(params)
     let diceResultPool = [];
     // Roll Dices
     for (let i = 0; i < numAttack; i++) {
-        diceResultPool.push({ type: "skillRoll", roll : new Roll("1d" + attackSkill.data.data.die.sides + "x=").roll(), saved : 1});
+        diceResultPool.push({ type: "skillRoll", roll : new Roll("1d" + attackSkill.data.data.die.sides + "x=" + (attackSkill.data.data.die.modifier == "" ? "" : " + " + attackSkill.data.data.die.modifier)).roll(), saved : 1});
     }
 
     // Roll Wild for Joker
@@ -356,7 +356,7 @@ function commitAttack(params)
 
     // Build Modifiers
     let skillModPool = [];
-    skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
+    //skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
     skillModPool.push({ mod : "rangePenalty", value : html.find("#rangePenalty")[0] === undefined ? 0 : parseInt(html.find("#rangePenalty")[0].value) });
     skillModPool.push({ mod : "targetCover", value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
     skillModPool.push({ mod : "isRecoil", value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
@@ -383,7 +383,7 @@ function commitAttack(params)
     diceResultPool.forEach((el) => {
         displayRollResultTemplate +=
         `<div style="flex: 1 0 auto;">
-                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "" } "><label title="" style="color: white;">${ el.roll.total }</label></div>
+                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "" }" title="${el.roll.formula }"><label style="color: white;">${ el.roll.total }</label></div>
             </div>`;
     });
 
@@ -407,7 +407,7 @@ function commitAttack(params)
             
             displaySuccessResultTemplate += 
                 `<div style="flex: 1 0 auto;">
-                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : ${ result.color }"><label title="${ el.roll.total} (${ el.roll.total + totalMod })" style="color : white;">${ result.display }</label></div>
+                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : ${ result.color }" title="${ el.roll.total} (${ el.roll.total + totalMod })"><label style="color : white;">${ result.display }</label></div>
                 </div>`;
         });
     }
@@ -542,21 +542,39 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         
         let weaponDamage = weapon.data.data.damage;
 
+        console.log("start damage : " + weaponDamage);
+
         // Downgrade weapon damage for minStr restrcitions
         if (attackSkillName == "Fighting" && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
         {
-            weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + damageMod;
+            weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "");
+            console.log("restricted melee damage output : " + weaponDamage);
         }     
 
+        // Update @str from Strenght dice
+        let regexStr = /[@]str/g;
+        weaponDamage = weaponDamage.replace(regexStr, "1d" + currentActor.data.data.attributes.strength.die.sides)
+
+        console.log("update @str outup : " + weaponDamage);
+
+        // Add Raise
+        weaponDamage += (successResultPool[i] == "Raise" ? " + 1d6" : "")
+        weaponDamage += " + " + damageMod;
+
+        console.log("Add raise output : " + weaponDamage);
+
+        // Explode all dices
+        let regexDiceExplode = /d[0-9]{1,2}/g;
+        weaponDamage = weaponDamage.replace(regexDiceExplode, "$&x=");
+
+        console.log("explode all dices : " + weaponDamage);
+
         // Roll dices damages
-        diceResultPool.push({ type: "damageRoll", 
-                                roll : new Roll(
-                                    weaponDamage.replace("@str", "1d" + currentActor.data.data.attributes.strength.die.sides + "x= +" 
-                                    + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "" + "x=")) 
-                                    + (successResultPool[i] == "Raise" ? " + 1d6x=" : "")
-                                    + " + " + damageMod
-                                ).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
+        diceResultPool.push({ type: "damageRoll", roll : new Roll(weaponDamage).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
     }
+
+    console.log("Dices rolled :");
+    console.log(diceResultPool);
 
     // Prepare template
     let displayRollResultTemplate = ``;
@@ -571,7 +589,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         displayRollResultTemplate += `<div style="display: flex; flex-wrap: wrap; font-size: 16px; font-weight: bold">`;
         displayRollResultTemplate +=
             `<div style="flex: 0 0 50px;">
-                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.raise ? "background-color: rgb(0, 200, 0, 0.35);" : "" } "><label title="${ el.roll.formula + "\n" + el.roll.result }" style="color: white;">${ el.roll.total }</label></div>
+                <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; ${ el.raise ? "background-color: rgb(0, 200, 0, 0.35);" : "" } "  title="${ el.roll.formula + "\n" + el.roll.result }" ><label style="color: white;">${ el.roll.total }</label></div>
             </div>`;
 
         // Calcul total toughness
@@ -593,7 +611,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
             if (!targetShaken) {
                 displayRollResultTemplate +=
                     `<div style="flex: 1 0 auto;">
-                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255,215,0, 0.35);"><label title="" style="color: white;">Shaken</label></div>
+                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255,215,0, 0.35);" title=">= ${ totalToughness }"><label style="color: white;">Shaken</label></div>
                     </div>`; 
             }
             
@@ -601,7 +619,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
             {
                 displayRollResultTemplate +=
                         `<div style="flex: 1 0 auto;">
-                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255, 0, 0, 0.35);"><label title="" style="color: white;">${ wounds } Wounds</label></div>
+                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255, 0, 0, 0.35);" title=">=${ (totalToughness + (wounds * 4)) }"><label style="color: white;">${ wounds } Wounds</label></div>
                         </div>`;
                 
                 if (isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken)) {
@@ -614,7 +632,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
 
                     displayRollResultTemplate +=
                         `<div style="flex: 1 0 auto;">
-                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px;"><label title="" style="color: white;">${ subInjury == undefined ? injury.injury : subInjury.injury }</label></div>
+                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px;"><label style="color: white;" title="${ roll1 } ${ injury.subInjury != undefined ? "->" + roll2 : ""}">${ subInjury == undefined ? injury.injury : subInjury.injury }</label></div>
                         </div>`;
                 }
             }
@@ -623,7 +641,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         }else{
             displayRollResultTemplate += 
                 `<div style="flex: 1 0 auto;">
-                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(0, 0, 255, 0.35);"><label title="" style="color: white;">Hold</label></div>
+                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(0, 0, 255, 0.35);"><label style="color: white;">No Damage</label></div>
                 </div>`;
         }
         displayRollResultTemplate += `</div>`;
