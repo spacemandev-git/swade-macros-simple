@@ -309,7 +309,7 @@ function commitAttack(params)
     let bennieUsed = params.bennieUsed;
 
     let ammoUsed = 0;
-
+    
     //SWADE rules for how much ammo is expended per RoF
     let rofAmmo = { 1: 1, 2: 5, 3: 10, 4: 20, 5: 40, 6: 50 };
     
@@ -387,21 +387,21 @@ function commitAttack(params)
     // Build Modifiers
     let skillModPool = [];
     //skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
-    skillModPool.push({ mod : "rangePenalty", value : html.find("#rangePenalty")[0] === undefined ? 0 : parseInt(html.find("#rangePenalty")[0].value) });
-    skillModPool.push({ mod : "targetCover", value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
-    skillModPool.push({ mod : "isRecoil", value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
-    skillModPool.push({ mod : "otherMod", value : html.find("#otherMod")[0] === undefined ? 0 : parseInt(html.find("#otherMod")[0].value) });
-    skillModPool.push({ mod : "isUnstable", value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
-    skillModPool.push({ mod : "distracted", value : currentActor.data.data.status.isDistracted ? -2 : 0});
-    skillModPool.push({ mod : "vulnerable", value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
-    skillModPool.push({ mod : "woundsFatigue", value : currentActor.calcWoundFatigePenalties()});
-    skillModPool.push({ mod : "sizeScale", value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
-    skillModPool.push({ mod : "doubleTap", value : doubleTapEdge ? 1 : 0 });
-    skillModPool.push({ mod : "threeRoundBurst", value : threeRoundBurstAbility ? 1 : 0 });
+    skillModPool.push({ mod : "rangePenalty", title : "Range Penality", abilitie : 0, value : html.find("#rangePenalty")[0] === undefined ? 0 : parseInt(html.find("#rangePenalty")[0].value) });
+    skillModPool.push({ mod : "targetCover", title : "Target Cover", abilitie : 0, value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
+    skillModPool.push({ mod : "isRecoil", title : "Is Recoil", abilitie : 0, value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
+    skillModPool.push({ mod : "isUnstable", title : "Is Unstable", abilitie : 0, value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
+    skillModPool.push({ mod : "distracted", title : "Distracted", abilitie : 0, value : currentActor.data.data.status.isDistracted ? -2 : 0});
+    skillModPool.push({ mod : "vulnerable", title : "Target Vunerable", abilitie : 0, value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
+    skillModPool.push({ mod : "woundsFatigue", title : "Wounds and Fatigue", abilitie : 0, value : currentActor.calcWoundFatigePenalties()});
+    skillModPool.push({ mod : "sizeScale", title : "Size Scale", abilitie : 0, value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
+    skillModPool.push({ mod : "doubleTap", title : "Double Tap", abilitie : 1, value : doubleTapEdge ? 1 : 0 });
+    skillModPool.push({ mod : "threeRoundBurst", title : "Three Round Burst", abilitie : 1, value : threeRoundBurstAbility ? 1 : 0 });
     if (attackSkillName == "Shooting") 
     { 
-        skillModPool.push({ mod : "minStrength", value : weapon.data.data.minStr == "" ? 0 : diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) ? diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) - diceStep.indexOf(weapon.data.data.minStr) : 0});
+        skillModPool.push({ mod : "minStrength", title : "Min Strength", abilitie : 0, value : weapon.data.data.minStr == "" ? 0 : diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) ? diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) - diceStep.indexOf(weapon.data.data.minStr) : 0});
     }
+    skillModPool.push({ mod : "otherMod", title : "Other Mod", abilitie : 0, value : html.find("#otherMod")[0] === undefined ? 0 : parseInt(html.find("#otherMod")[0].value) });
 
     // Set Total modifications variable
     let totalMod = 0;
@@ -457,10 +457,11 @@ function commitAttack(params)
         </div>
         ${ attackSkillName == "Shooting" ? `<p><i><b>${ ammoUsed }</b> ammo used</i></p>` : "" }
         <p><i>Notes : ${weapon.data.data.notes}</i></p>
+        <p style="font-size: 12px;"><label style="font-weight: bold;">Abilities used :</label> ${ skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", ") }</p>
         ${ bennieUsed ? `<p style="text-align: center"><b>One bennie used for reroll attack</b></p>` : "" }
         <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center;">
                 <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>Diff. : </span><span>${ attackSkillName == "Shooting" ? "4" : currentTarget.data.data.stats.parry.value }</span></div>
-                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;" title="${ skillModPool.map((el) => el.mod + " : " + el.value).join("\n") }"><span>Mod : </span><span>${totalMod}</span></div>
+                <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;" title="${ skillModPool.filter((el) => el.value != 0).map((el) => el.title + " : " + el.value).join("\n") }"><span>Mod : </span><span>${totalMod}</span></div>
         </div>
         <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center;">
             <div style="display: flex; flex-wrap: wrap;">
@@ -523,7 +524,6 @@ function commitAttack(params)
         // Remove ammo from weapon
         if (attackSkillName == "Shooting" && trackAmmo) {
             let newShots = (weapon.data.data.shots -= ammoUsed);
-            console.log(newShots);
             weapon.update({ "data.shots": newShots });
         };
 
@@ -579,9 +579,9 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
     let ignoreAmor = html.find("#ignoreArmor")[0] === undefined ? false : html.find("#ignoreArmor")[0].checked ? true : false;
 
     // get damage modification
-    if (doubleTapEdge) damageModPool.push({ mod : "doubleTap", value : 1});
-    if (threeRoundBurstAbility) damageModPool.push({ mod : "threeRoundBurst", value : 1});
-    damageModPool.push({ mod : "otherMod", value : html.find("#damageMod")[0] === undefined ? 0 : parseInt(html.find("#damageMod")[0].value)});
+    if (doubleTapEdge) damageModPool.push({ mod : "doubleTap", title : "Double Tap", abilitie : 0, value : 1});
+    if (threeRoundBurstAbility) damageModPool.push({ mod : "threeRoundBurst", title : "Three Round Burst", abilitie : 0, value : 1});
+    damageModPool.push({ mod : "otherMod", title : "Other Mod", abilitie : 0, value : html.find("#damageMod")[0] === undefined ? 0 : parseInt(html.find("#damageMod")[0].value)});
 
     // Set Total damage variables
     let totalDamageMod = 0;
@@ -592,39 +592,27 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         
         let weaponDamage = weapon.data.data.damage;
 
-        console.log("start damage : " + weaponDamage);
-
         // Downgrade weapon damage for minStr restrcitions
         if (attackSkillName == "Fighting" && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
         {
             weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "");
-            console.log("restricted melee damage output : " + weaponDamage);
         }     
 
         // Update @str from Strenght dice
         let regexStr = /[@]str/g;
         weaponDamage = weaponDamage.replace(regexStr, "1d" + currentActor.data.data.attributes.strength.die.sides)
 
-        console.log("update @str outup : " + weaponDamage);
-
         // Add Raise
         weaponDamage += (successResultPool[i] == "Raise" ? " + 1d6" : "")
         weaponDamage += " + " + totalDamageMod;
-
-        console.log("Add raise output : " + weaponDamage);
 
         // Explode all dices
         let regexDiceExplode = /d[0-9]{1,2}/g;
         weaponDamage = weaponDamage.replace(regexDiceExplode, "$&x=");
 
-        console.log("explode all dices : " + weaponDamage);
-
         // Roll dices damages
         diceResultPool.push({ type: "damageRoll", roll : new Roll(weaponDamage).roll(), raise : successResultPool[i] == "Raise" ? 1 : 0});
     }
-
-    console.log("Dices rolled :");
-    console.log(diceResultPool);
 
     // Prepare template
     let displayRollResultTemplate = ``;
@@ -713,7 +701,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
                 <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>AP : </span><span>${ weapon.data.data.ap }</span></div>
                 <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="${ "armor : " + armorToughness + "\n" + "cover : " + coverBonus }"><span>Armor : </span><span> ${ (armorToughness + parseInt(coverBonus)) }</span></div>
                 <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>Toughness : </span><span> ${ currentTarget.data.data.stats.toughness.value }</span></div>
-                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="${ damageModPool.map((el) => el.mod + " : " + el.value).join("\n") }"><span>Damage mod : </span><span>${ totalDamageMod }</span></div>
+                <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="${ damageModPool.map((el) => el.title + " : " + el.value).join("\n") }"><span>Damage mod : </span><span>${ totalDamageMod }</span></div>
             </div>
             <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center; margin-bottom: 10px;">
                 <div style="display: flex; flex-wrap: wrap;">
