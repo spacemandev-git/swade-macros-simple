@@ -522,7 +522,7 @@ function commitAttack(params)
         }
 
         // Remove ammo from weapon
-        if (attackSkillName == "Shooting" && trackAmmo) {
+        if (attackSkillName == "Shooting" && trackAmmo && !bennieUsed) {
             let newShots = (weapon.data.data.shots -= ammoUsed);
             weapon.update({ "data.shots": newShots });
         };
