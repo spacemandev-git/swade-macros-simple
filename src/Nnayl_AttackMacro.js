@@ -679,7 +679,7 @@ function damageCalculation(params) //weapon, successResultPool, attackSkillName)
         }else{
             displayRollResultTemplate += 
                 `<div style="flex: 1 0 auto;">
-                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(0, 0, 255, 0.35);"><label style="color: white;">No Damage</label></div>
+                    <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(0, 0, 255, 0.35);" title="< ${ totalToughness }"><label style="color: white;">No Damage</label></div>
                 </div>`;
         }
         displayRollResultTemplate += `</div>`;
