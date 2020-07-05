@@ -385,6 +385,8 @@ async function damageResult(params) //weapon, successResultPool, attackSkillName
         ]}
     ];
 
+    console.log(criticalInjury);
+
     let damageModPool = [];
 
     // create a dice pool
@@ -482,14 +484,28 @@ async function damageResult(params) //weapon, successResultPool, attackSkillName
                     let injury = criticalInjury.find((el) => el.value.includes(roll1));
                     let subInjury =  injury.subInjury != undefined ? injury.subInjury.find((el) => el.value.includes(roll2)) : undefined;
 
-                    el.grettyDamageTitle = roll1 + " " + injury.subInjury != undefined ? "->" + roll2 : "";
-                    el.grettyDamageValue = subInjury == undefined ? injury.injury : subInjury.injury;
+                    el.grittyDamageTitle = roll1 + " " + (injury.subInjury != undefined ? "-> " + roll2 : "");
+                    el.grittyDamageValue = subInjury == undefined ? injury.injury : subInjury.injury;
                 }
             }
             
             targetShaken = true;
         }
 
+    });
+
+    console.log({
+        weaponImg : weapon.data.img,
+        weaponName : weapon.data.name,
+        weaponAp : weapon.data.data.ap,
+        targetName : currentTarget.data.name,
+        toughnessValue : currentTarget.data.data.stats.toughness.value,
+        bennieUsed : bennieUsed == undefined ? 0 : bennieUsed,
+        armorTitle : "armor : " + armorToughness + "\n" + "cover : " + coverBonus,
+        armorValue : armorToughness + parseInt(coverBonus),
+        damageModTitle : damageModPool.map((el) => el.title + " : " + el.value).join("\n"),
+        damageModValue : totalDamageMod,
+        diceResultPool : diceResultPool
     });
 
     let chatMessage = await renderTemplate("modules/swade-macros-simple-localization/templates/chat-damage-result.html",{
