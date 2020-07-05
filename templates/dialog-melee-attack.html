@@ -1,0 +1,27 @@
+<div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-between">
+    <div style="padding: 0px 0px 5px 0px">
+        <label style="display: inline-block; width: 200px">{{ localize "swadeMacro.combatDialog.weapons"}}</label>
+        <select id="selectedWeapon">
+            {{#each weapons}}
+            <option value="{{this.name}}">{{this.name}} | {{ localize "swadeMacro.meleeCombatDialog.content.weaponDamage"}} {{this.data.data.damage}} </option>
+            {{/each}}
+        </select>
+    </div>
+    <div style="padding: 0px 0px 5px 0px">
+        <label for="targetCover" style="display: inline-block; width: 200px">{{ localize "swadeMacro.combatDialog.content.targetCover"}}</label>
+        <select id="targetCover">
+        <option value="0">{{ localize "swadeMacro.combatDialog.content.noCover"}}</option>
+        <option value="-2">{{ localize "swadeMacro.combatDialog.content.coverLight"}}</option>
+        <option value="-4">{{ localize "swadeMacro.combatDialog.content.coverMedium"}}</option>
+        <option value="-6">{{ localize "swadeMacro.combatDialog.content.coverHeavy"}}</option>
+        <option value="-8">{{ localize "swadeMacro.combatDialog.content.coverNearTotal"}}</option>
+        </select>
+    </div>
+    <div style="padding: 0px 0px 5px 0px">
+        <label for="otherMod" style="display: inline-block; width: 200px">{{localize "swadeMacro.combatDialog.content.otherMod"}}</label>
+        <input id="otherMod" style="width: 50px;" type="number" value="0" />
+    </div>
+</div>
+<div style="padding: 0px 0px 5px 0px; text-align: center;">
+    <i><label>{{localize "swadeMacro.meleeCombatDialog.content.footerNotification"}}</label></i>
+</div>

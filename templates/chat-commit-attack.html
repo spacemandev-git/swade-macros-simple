@@ -1,0 +1,73 @@
+<div>
+    <div style="display: flex; align-items: center;">
+        <div style="width: 52px; flex: 0 0 52px;">
+            <img src="{{weaponImg}}"></img>
+        </div>
+        <div style="padding-left: 5px;">
+            <span>{{ localize "swadeMacro.commitAttackChat.ambiancePart1"}} <b>{{targetName}}</b> {{ localize "swadeMacro.commitAttackChat.ambiancePart2"}} <b>{{weaponName}}</b></span>
+        </div>
+    </div>
+    {{#if rangeAttack}}
+    <p><i><b>{{ammoUsed}}</b> {{ localize "swadeMacro.commitAttackChat.ammoUsed"}}</i></p>
+    {{/if}}
+    <p><i>{{localize "swadeMacro.commitAttackChat.weaponNotes"}} {{weaponNotes}}</i></p>
+    <p style="font-size: 12px;"><label style="font-weight: bold;">{{ localize "swadeMacro.commitAttackChat.abilitities"}}</label> {{abilitites}} </p>
+    {{#if bennieUsed}}
+    <p style="text-align: center"><b>{{localize "swadeMacro.commitAttackChat.bennieUsed"}}</b></p>
+    {{/if}}
+    <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center;">
+            <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;"><span>{{ localize "swadeMacro.commitAttackChat.dfficulty"}} </span><span>{{difficulty}}</span></div>
+            <div style="flex-grow: 1; padding-bottom: 2px; padding-top: 2px;" title="{{modTitle}}"><span>{{ localize "swadeMacro.commitAttackChat.mods"}}</span><span>{{modValue}}</span></div>
+    </div>
+    <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center;">
+        <div style="display: flex; flex-wrap: wrap;">
+            <div style="box-shadow: 0 0 2px #FFF inset; display: flex; flex-direction: column; text-align: center; flex: 1 100 auto; width: 100%">
+                <div style="padding: 5px 0px 5px 0px; background: rgba(255, 255, 240, 0.8);">
+                    <label><b>{{localize "swadeMacro.commitAttackChat.roll"}}</b></label>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; font-size: 16px; font-weight: bold">
+                    {{#each diceResultPool}}
+                    <div style="flex: 1 0 auto;">
+                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; {{this.bgColor}}" title="{{this.roll.formula}}">
+                            <label style="color: white;">{{this.roll.total}}</label>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            <div style="box-shadow: 0 0 2px #FFF inset; display: flex; flex-direction: column; text-align: center; flex: 1 100 auto; width: 100%">
+                <div style="padding: 5px 0px 5px 0px; background: rgba(255, 255, 240, 0.8);">
+                    <label><b>{{ localize "swadeMacro.commitAttackChat.result"}}</b></label>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; font-size: 16px; font-weight: bold">
+                    {{#if isCriticalFailure}}
+                    <div style="flex: 1 0 auto;">
+                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : rgb(255, 0, 0, 0.35)"><label style="color : rgb(200, 0, 0);">!! {{ localize "swadeMacro.commitAttackChat.criticalFailure"}} !!</label></div>
+                    </div>   
+                    {{/if}}
+                    {{#if isNotCriticalFailure}}
+                    {{#each diceResultPool}}
+                    {{# if this.saved}}
+                    <div style="flex: 1 0 auto;">
+                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color : {{this.display.color}}" title="{{this.roll.total}} ({{this.display.total}})">
+                            <label style="color : white;">{{this.display.display}}</label>
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/each}}
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{#if isNotCriticalFailure}}
+<div style="display: flex; padding-top: 5px;">
+    <button id="reRollButton"><center>{{localize "swadeMacro.commitAttackChat.useBennie"}}</center></button>
+</div>
+{{/if}}
+{{#if isHit}}
+<div style="display: flex; padding-top: 5px;">
+    <button id="callDamageButton"><center>{{localize "swadeMacro.commitAttackChat.applyDamage"}}</center></button>
+</div>
+{{/if}}
