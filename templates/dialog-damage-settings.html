@@ -1,8 +1,8 @@
-<div><p style="text-align: center">{{ localize "swadeMacro.damageSettingsDialog.contentText" }}</p></div>
-    <div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-between">
-        <div style="padding: 0px 0px 5px 0px;">
-            <label for="coverBonus" style="display: inline-block; width: 200px">{{ localize "swadeMacro.damageSettingsDialog.obstacleArmor" }}</label>
-            <select id="coverBonus" style="width: 50px;">
+<div><p class="text-center">{{ localize "swadeMacro.damageSettingsDialog.contentText" }}</p></div>
+    <div class="flex-row-wrap">
+        <div class="pb-5">
+            <label for="coverBonus" class="dialog-label">{{ localize "swadeMacro.damageSettingsDialog.obstacleArmor" }}</label>
+            <select id="coverBonus" class="w-50">
                 <option value="0">0</option>    
                 <option value="2">2</option>
                 <option value="4">4</option>
@@ -11,16 +11,16 @@
                 <option value="10">10</option>
             </select>
         </div>
-        <div style="padding: 0px 0px 5px 0px;">
-            <label for="ignoreArmor" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">{{ localize "swadeMacro.damageSettingsDialog.ignoreTargetArmor" }}</label>
-            <input id="ignoreArmor" style="width: 43px; height: 15px;" type="checkbox" />
+        <div class="pb-5">
+            <label for="ignoreArmor" class="dialog-label check">{{ localize "swadeMacro.damageSettingsDialog.ignoreTargetArmor" }}</label>
+            <input id="ignoreArmor" class="check" type="checkbox" />
         </div>
-        <div style="padding: 0px 0px 5px 0px;">
-            <label for="damageMod" style="display: inline-block; width: 200px">{{ localize "swadeMacro.damageSettingsDialog.damageMods" }}</label>
+        <div class="pb-5">
+            <label for="damageMod" class="dialog-label">{{ localize "swadeMacro.damageSettingsDialog.damageMods" }}</label>
             <input id="damageMod" style="width: 50px;" type="number" value="0" />
         </div>
-        <div style="padding: 0px 0px 5px 0px;">
-            <label for="isGrettyDamage" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">{{ localize "swadeMacro.damageSettingsDialog.grittyDamage" }}</label>
-            <input id="isGrettyDamage" style="width: 43px; height: 15px;" type="checkbox" />
+        <div class="pb-5">
+            <label for="isGrettyDamage" class="dialog-label check">{{ localize "swadeMacro.damageSettingsDialog.grittyDamage" }}</label>
+            <input id="isGrettyDamage" class="check" type="checkbox" />
         </div>
     </div>

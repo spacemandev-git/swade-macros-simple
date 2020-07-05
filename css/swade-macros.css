@@ -14,10 +14,142 @@
     padding-bottom: 5px;
 }
 
+.pl-5 {
+    padding-left: 5px;
+}
+
+.w-50{
+    width: 50px;
+}
+
+.fs-16 {
+    font-size: 16px;
+}
+
+.fw-bold {
+    font-weight: bold;
+}
+
+.flex-50 {
+    flex: 0 0 50px;
+}
+
+.flex-auto{
+    flex: 1 0 auto;
+}
+
 .text-italic {
     font-style: italic;
 }
 
 .text-center {
     text-align: center;
+}
+
+.bg-gold {
+    background-color: rgb(255,215,0, 0.35);
+}
+
+.bg-red {
+    background-color: rgb(255, 0, 0, 0.35);
+}
+
+.bg-blue {
+    background-color: rgb(0, 0, 255, 0.35);
+}
+
+.white {
+    color: white;
+}
+
+.flex-row-wrap {
+    display: flex; 
+    flex-wrap: wrap; 
+    flex-direction: row; 
+    justify-content: space-between
+}
+
+.dialog-label {
+    display: inline-block; 
+    width: 200px;
+}
+
+label.check {
+    margin-bottom: 3px; 
+    vertical-align: bottom;
+}
+
+input.check {
+    width: 43px; 
+    height: 15px;
+}
+
+.chat-header-box {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 10px;
+}
+
+.chat-header-img {
+    width: 52px; 
+    flex: 0 0 52px;
+}
+
+.chat-content-header-box {
+    border: 1px solid #999; 
+    box-shadow: 0 0 2px #FFF inset; 
+    background: rgba(255, 255, 240, 0.8); 
+    margin-bottom: 5px;
+}
+
+.chat-content-header-body {
+    width: 50%; 
+    flex: 1 0 auto; 
+    padding-bottom: 2px; 
+    padding-top: 2px;
+}
+
+.chat-content-box {
+    border: 1px solid #999; 
+    border-radius: 3px; 
+    box-shadow: 0 0 2px #FFF inset; 
+    background: rgba(0, 0, 0, 0.1); 
+    margin-bottom: 10px;
+}
+
+.chat-content-box .flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.chat-content-box .flex .flex-colum {
+    box-shadow: 0 0 2px #FFF inset;
+    display: flex; 
+    flex-direction: column; 
+    text-align: center; 
+    flex: 1 100 auto; 
+    width: 100%
+}
+
+.chat-content-box .flex .flex-colum .title {
+    padding: 5px 0px 5px 0px; 
+    background: rgba(255, 255, 240, 0.8);
+}
+
+.chat-content-box .flex .flex-colum .container {
+    display: flex; 
+    flex-wrap: wrap; 
+    font-size: 16px; 
+    font-weight: bold
+}
+
+.chat-content-box .flex .flex-colum .container .item  {
+    padding: 3px 0px 3px 0px; 
+    box-shadow: 0 0 2px #FFF inset; 
+    border-radius: 3px;
+}
+
+.chat-button {
+    display: flex; 
+    padding-top: 5px;
 }

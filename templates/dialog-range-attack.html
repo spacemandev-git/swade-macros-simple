@@ -1,14 +1,14 @@
-<div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-between">
-    <div style="padding: 0px 0px 5px 0px">
-        <label style="display: inline-block; width: 200px">{{ localize "swadeMacro.combatDialog.weapons"}}</label>
+<div class="flex-row-wrap">
+    <div class="pb-5">
+        <label class="dialog-label">{{ localize "swadeMacro.combatDialog.weapons"}}</label>
         <select id="selectedWeapon">
             {{#each weapons}}
             <option value="{{this.name}}">{{this.name}} | {{ localize "swadeMacro.rangeCombatDialog.content.rof"}} {{this.data.data.rof}} | {{ localize "swadeMacro.rangeCombatDialog.content.shots"}} {{this.data.data.shots}} </option>
             {{/each}}
         </select>
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="rangePenalty" style="display: inline-block; width: 200px">{{ localize "swadeMacro.rangeCombatDialog.content.targetRange"}}</label>
+    <div class="pb-5">
+        <label for="rangePenalty" class="dialog-label">{{ localize "swadeMacro.rangeCombatDialog.content.targetRange"}}</label>
         <select id="rangePenalty">
             <option value="0">{{ localize "swadeMacro.rangeCombatDialog.content.rangeShort"}}</option>
             <option value="-2">{{ localize "swadeMacro.rangeCombatDialog.content.rangeMedium"}}</option>
@@ -16,8 +16,8 @@
             <option value="-8">{{ localize "swadeMacro.rangeCombatDialog.content.rangeExrem"}}</option>
         </select>
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="targetCover" style="display: inline-block; width: 200px">{{ localize "swadeMacro.combatDialog.content.targetCover" }}</label>
+    <div class="pb-5">
+        <label for="targetCover" class="dialog-label">{{ localize "swadeMacro.combatDialog.content.targetCover" }}</label>
         <select id="targetCover">
         <option value="0">{{ localize "swadeMacro.combatDialog.content.noCover" }}</option>
         <option value="-2">{{ localize "swadeMacro.combatDialog.content.coverLight" }}</option>
@@ -26,9 +26,9 @@
         <option value="-8">{{ localize "swadeMacro.combatDialog.content.coverNearTotal" }}</option>
         </select>
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="selectedRoF" style="display: inline-block; width: 200px">{{ localize "swadeMacro.rangeCombatDialog.content.rateOfFire" }}</label>
-        <select id="selectedRoF" style="width: 50px;">
+    <div class="pb-5">
+        <label for="selectedRoF" class="dialog-label">{{ localize "swadeMacro.rangeCombatDialog.content.rateOfFire" }}</label>
+        <select id="selectedRoF" class="w-50">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -37,31 +37,31 @@
             <option value="6">6</option>
         </select>
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="isRecoil" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">{{ localize "swadeMacro.rangeCombatDialog.content.recoilPenality"}}</label>
-        <input id="isRecoil" style="width: 43px; height: 15px;" type="checkbox" />
+    <div class="pb-5">
+        <label for="isRecoil" class="dialog-label check">{{ localize "swadeMacro.rangeCombatDialog.content.recoilPenality"}}</label>
+        <input id="isRecoil" class="check" type="checkbox" />
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="otherMod" style="display: inline-block; width: 200px">{{localize "swadeMacro.combatDialog.content.otherMod"}}</label>
-        <input id="otherMod" style="width: 50px;" type="number" value="0" />
+    <div class="pb-5">
+        <label for="otherMod" class="dialog-label">{{localize "swadeMacro.combatDialog.content.otherMod"}}</label>
+        <input id="otherMod" class="w-50" type="number" value="0" />
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="isUnstable" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">{{ localize "swadeMacro.rangeCombatDialog.content.unstable"}}</label>
-        <input id="isUnstable" style="width: 43px; height: 15px;" type="checkbox" />
+    <div class="pb-5">
+        <label for="isUnstable" class="dialog-label check">{{ localize "swadeMacro.rangeCombatDialog.content.unstable"}}</label>
+        <input id="isUnstable" class="check" type="checkbox" />
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="doubleTap" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">{{ localize "swadeMacro.rangeCombatDialog.content.doubleTap"}}</label>
-        <input id="doubleTap" style="width: 43px; height: 15px;" type="checkbox" />
+    <div class="pb-5">
+        <label for="doubleTap" class="dialog-label check">{{ localize "swadeMacro.rangeCombatDialog.content.doubleTap"}}</label>
+        <input id="doubleTap" class="check" type="checkbox" />
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="threeRoundBurst" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">{{ localize "swadeMacro.rangeCombatDialog.content.threeRoundBurst"}}</label>
-        <input id="threeRoundBurst" style="width: 43px; height: 15px;" type="checkbox" />
+    <div class="pb-5">
+        <label for="threeRoundBurst" class="dialog-label check">{{ localize "swadeMacro.rangeCombatDialog.content.threeRoundBurst"}}</label>
+        <input id="threeRoundBurst" class="check" type="checkbox" />
     </div>
-    <div style="padding: 0px 0px 5px 0px">
-        <label for="trackAmmo" style="display: inline-block; width: 200px; margin-bottom: 3px; vertical-align: bottom;">{{ localize "swadeMacro.rangeCombatDialog.content.trackAmmo"}}</label>
-        <input id="trackAmmo" style="width: 43px; height: 15px;" type="checkbox" checked />
+    <div class="pb-5">
+        <label for="trackAmmo" class="dialog-label check">{{ localize "swadeMacro.rangeCombatDialog.content.trackAmmo"}}</label>
+        <input id="trackAmmo" class="check" type="checkbox" checked />
     </div>
 </div>
-<div style="padding: 0px 0px 5px 0px; text-align: center;">
+<div class="text-center pb-5">
     <i><label>{{ localize "swadeMacro.combatDialog.content.footerNotification"}}</label></i>
 </div>

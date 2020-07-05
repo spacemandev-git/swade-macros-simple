@@ -1,61 +1,61 @@
 <div>
-    <div style="display: flex; align-items: center; margin-bottom: 10px;">
-        <div style="width: 52px; flex: 0 0 52px;">
+    <div class="chat-header-box">
+        <div class="chat-header-img">
             <img src="{{weaponImg}}"></img>
         </div>
-        <div style="padding-left: 5px;">
+        <div class="pl-5">
             <span>{{ localize "swadeMacro.damageResultChat.ambiancePart1"}} <b>{{weaponName}}</b> {{localize "swadeMacro.damageResultChat.ambiancePart2"}} <b>{{targetName}}</b></span>
         </div>
     </div>
     {{#if bennieUsed}}
-    <p style="text-align: center"><b>{{localize "swadeMacro.damageResultChat.bennieUsed"}}</b></p>
+    <p class="text-center"><b>{{localize "swadeMacro.damageResultChat.bennieUsed"}}</b></p>
     {{/if}}
-    <div style="border: 1px solid #999; display: flex; box-shadow: 0 0 2px #FFF inset; background: rgba(255, 255, 240, 0.8); margin-bottom: 5px; text-align: center; flex-wrap: wrap;">
-        <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>{{ localize "swadeMacro.damageResultChat.ap"}} </span><span>{{weaponAp}}</span></div>
-        <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="{{armorTitle}}"><span>{{localize "swadeMacro.damageResultChat.armor"}} </span><span> {{armorValue}}</span></div>
-        <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;"><span>{{localize "swadeMacro.damageResultChat.toughness"}} </span><span> {{toughnessValue}}</span></div>
-        <div style="width: 50%; flex: 1 0 auto; padding-bottom: 2px; padding-top: 2px;" title="{{damageModTittle}}"><span>{{localize "swadeMacro.damageResultChat.damageMods"}} </span><span>{{damageModValue}}</span></div>
+    <div class="chat-content-header-box text-center flex-row-wrap">
+        <div class="chat-content-header-body"><span>{{ localize "swadeMacro.damageResultChat.ap"}} </span><span>{{weaponAp}}</span></div>
+        <div class="chat-content-header-body" title="{{armorTitle}}"><span>{{localize "swadeMacro.damageResultChat.armor"}} </span><span> {{armorValue}}</span></div>
+        <div class="chat-content-header-body"><span>{{localize "swadeMacro.damageResultChat.toughness"}} </span><span> {{toughnessValue}}</span></div>
+        <div class="chat-content-header-body" title="{{damageModTittle}}"><span>{{localize "swadeMacro.damageResultChat.damageMods"}} </span><span>{{damageModValue}}</span></div>
     </div>
-    <div style="border: 1px solid #999; border-radius: 3px; box-shadow: 0 0 2px #FFF inset; background: rgba(0, 0, 0, 0.1); text-align: center; margin-bottom: 10px;">
-        <div style="display: flex; flex-wrap: wrap;">
-            <div style="box-shadow: 0 0 2px #FFF inset; display: flex; flex-direction: column; text-align: center; flex: 1 100 auto; width: 100%">
-                <div style="padding: 5px 0px 5px 0px; background: rgba(255, 255, 240, 0.8);">
+    <div class="chat-content-box text-center">
+        <div class="flex">
+            <div class="flex-colum">
+                <div class="title">
                     <label><b>{{localize "swadeMacro.damageResultChat.result"}}</b></label>
                 </div>
                 {{#each diceResultPool}}
-                <div style="display: flex; flex-wrap: wrap; font-size: 16px; font-weight: bold">
-                    <div style="flex: 0 0 50px;">
-                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; {{this.rollBgColor}}"  title="{{this.rollTitle}}" >
-                            <label style="color: white;">{{this.roll.total}}</label>
+                <div class="container">
+                    <div class="flex-50">
+                        <div class="item" style="{{this.rollBgColor}}"  title="{{this.rollTitle}}" >
+                            <label class="white">{{this.roll.total}}</label>
                         </div>
                     </div>
                     {{#if this.toughnessPassed}}
                         {{#if this.isNotShaken}}
-                        <div style="flex: 1 0 auto;">
-                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255,215,0, 0.35);" title=">= {{this.toughness}}">
-                                <label style="color: white;">{{localize "swadeMacro.damageResultChat.shaken"}}</label>
+                        <div class="flex-auto">
+                            <div class="item bg-gold" title=">= {{this.toughness}}">
+                                <label class="white">{{localize "swadeMacro.damageResultChat.shaken"}}</label>
                             </div>
                         </div>
                         {{/if}}
                         {{#if this.wounded}}
-                        <div style="flex: 1 0 auto;">
-                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(255, 0, 0, 0.35);" title=">={{this.woundRank}}">
-                                <label style="color: white;">{{this.wounds}} {{localize "swadeMacro.damageResultChat.wounds"}}</label>
+                        <div class="flex-auto">
+                            <div class="item bg-red" title=">={{this.woundRank}}">
+                                <label class="white">{{this.wounds}} {{localize "swadeMacro.damageResultChat.wounds"}}</label>
                             </div>
                         </div>
                         {{#if this.isGrettyDamage}}
-                        <div style="flex: 1 0 auto;">
-                            <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px;" title="{{this.grittyDamageTitle}}">
-                                <label style="color: white;">{{this.grittyDamageValue}}</label>
+                        <div class="flex-auto">
+                            <div class="item" title="{{this.grittyDamageTitle}}">
+                                <label class="white">{{this.grittyDamageValue}}</label>
                             </div>
                         </div>
                         {{/if}}
                         {{/if}}
                     {{/if}}
                     {{#if this.toughnessNotPassed}}
-                    <div style="flex: 1 0 auto;">
-                        <div style="padding: 3px 0px 3px 0px; box-shadow: 0 0 2px #FFF inset; border-radius: 3px; background-color: rgb(0, 0, 255, 0.35);" title="< {{this.toughness}}">
-                            <label style="color: white;">{{ localize "swadeMacro.damageResultChat.noDamage"}}</label>
+                    <div class="flex-auto">
+                        <div class="item bg-blue" title="< {{this.toughness}}">
+                            <label class="white">{{ localize "swadeMacro.damageResultChat.noDamage"}}</label>
                         </div>
                     </div>
                     {{/if}}
@@ -65,6 +65,6 @@
         </div>
     </div>
 </div>
-<div style="display: flex; padding-top: 5px;">
+<div class="chat-button">
     <button id="reRollButton"><center>{{ localize "swadeMacro.damageResultChat.useBennie"}}</center></button>
 </div>
