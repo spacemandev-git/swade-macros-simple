@@ -41,7 +41,7 @@ async function openDialogCombat()
     // Set weapons list
     weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
 
-    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/dialog-combat.html");
+    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/macro-combat-flow/dialog-combat.html");
 
     new Dialog({
         title: i18n("swadeMacro.combatDialog.title"),
@@ -97,7 +97,7 @@ async function  meleeAttackForm(){
     }
 
     // Prepare melee atack form template
-    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/dialog-melee-attack.html",{weapons : meleeWeapons });
+    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/macro-combat-flow/dialog-melee-attack.html",{weapons : meleeWeapons });
 
     if (isValidConditions) {
         // Show form
@@ -131,7 +131,7 @@ async function rangedAttackForm(){
     }
     //templateWeaponsList += `<option value="${wep.name}">${wep.name} | RoF ${wep.data.data.rof} | shots ${wep.data.data.shots} </option>`;
     // Prepare range atack form template
-    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/dialog-range-attack.html",{weapons : rangeWeapons });
+    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/macro-combat-flow/dialog-range-attack.html",{weapons : rangeWeapons });
 
     // Show form
     if (isValidConditions) {
@@ -158,7 +158,7 @@ async function rangedAttackForm(){
 // Settings for damage outpout
 async function damageSettings(params, eventTarget)
 {
-    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/dialog-damage-settings.html");
+    let template = await renderTemplate("modules/swade-macros-simple-localization/templates/macro-combat-flow/dialog-damage-settings.html");
 
     new Dialog({
         title: i18n("swadeMacro.damageSettingsDialog.title"),
@@ -306,7 +306,7 @@ async function commitAttack(params)
     
     if (isValidConditions) {
 
-        let chatMessage = await renderTemplate("modules/swade-macros-simple-localization/templates/chat-commit-attack.html",{
+        let chatMessage = await renderTemplate("modules/swade-macros-simple-localization/templates/macro-combat-flow/chat-commit-attack.html",{
             weaponImg : weapon.data.img,
             weaponName : weapon.data.name,
             weaponNotes : weapon.data.data.notes,
@@ -491,7 +491,7 @@ async function damageResult(params)
 
     });
 
-    let chatMessage = await renderTemplate("modules/swade-macros-simple-localization/templates/chat-damage-result.html",{
+    let chatMessage = await renderTemplate("modules/swade-macros-simple-localization/templates/macro-combat-flow/chat-damage-result.html",{
         weaponImg : weapon.data.img,
         weaponName : weapon.data.name,
         weaponAp : weapon.data.data.ap,
