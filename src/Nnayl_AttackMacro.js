@@ -39,7 +39,6 @@ async function openDialogCombat()
     currentTarget = Array.from(game.user.targets)[0].actor;
 
     // Set weapons list
-    
     weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
 
     let template = await renderTemplate("modules/swade-macros-simple-localization/templates/dialog-combat.html");
@@ -358,7 +357,7 @@ async function commitAttack(params)
 }// end commitAttack
 
 // Calcul and display damages
-async function damageResult(params) //weapon, successResultPool, attackSkillName)
+async function damageResult(params)
 {
     let weapon = params.weapon;
     let successResultPool = params.successResultPool;
@@ -384,8 +383,6 @@ async function damageResult(params) //weapon, successResultPool, attackSkillName
             { value : [ 6 ], injury : i18n("swadeMacro.damageResultChat.brainDamage") }
         ]}
     ];
-
-    console.log(criticalInjury);
 
     let damageModPool = [];
 
@@ -492,20 +489,6 @@ async function damageResult(params) //weapon, successResultPool, attackSkillName
             targetShaken = true;
         }
 
-    });
-
-    console.log({
-        weaponImg : weapon.data.img,
-        weaponName : weapon.data.name,
-        weaponAp : weapon.data.data.ap,
-        targetName : currentTarget.data.name,
-        toughnessValue : currentTarget.data.data.stats.toughness.value,
-        bennieUsed : bennieUsed == undefined ? 0 : bennieUsed,
-        armorTitle : "armor : " + armorToughness + "\n" + "cover : " + coverBonus,
-        armorValue : armorToughness + parseInt(coverBonus),
-        damageModTitle : damageModPool.map((el) => el.title + " : " + el.value).join("\n"),
-        damageModValue : totalDamageMod,
-        diceResultPool : diceResultPool
     });
 
     let chatMessage = await renderTemplate("modules/swade-macros-simple-localization/templates/chat-damage-result.html",{
