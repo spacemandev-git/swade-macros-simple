@@ -1,4 +1,11 @@
 {
+    "swadeMacro.settings.skillShooting.name" :"Shooting skill name : ",
+    "swadeMacro.settings.skillShooting.hint" :"Define the name of shooting skill",
+    "swadeMacro.settings.skillFighting.name" :"Fighting skill name : ",
+    "swadeMacro.settings.skillFighting.hint" :"Define the name of fighting skill",
+    "swadeMacro.settings.trackAmmo.name" :"Track ammunitions consumption : ",
+    "swadeMacro.settings.trackAmmo.hint" :"Default parameters to track ammunitions consumption",
+
     "swadeMacro.ui.notification.needActor" : "To attack you need to select a token",
     "swadeMacro.ui.notification.actorShaken" : "You are shaken, you can't attack",
     "swadeMacro.ui.notification.needTarget" : "To attack you need to select a target",
@@ -48,6 +55,8 @@
     "swadeMacro.damageSettingsDialog.damageMods" : "Damage modification : ",
     "swadeMacro.damageSettingsDialog.grittyDamage" : "Apply gritty damage : ",
     "swadeMacro.damageSettingsDialog.title" : "Damage Settings",
+    "swadeMacro.damageSettingsDialog.content.doubleTap" : "Double tap (Edge) : ",
+    "swadeMacro.damageSettingsDialog.content.threeRoundBurst" : "Three round burst : ",
     "swadeMacro.damageSettingsDialog.confirmButton" : "Confirm",
     "swadeMacro.damageSettingsDialog.cancelButton" : "Cancel",
 

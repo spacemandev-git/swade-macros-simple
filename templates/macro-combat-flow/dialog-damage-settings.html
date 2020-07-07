@@ -24,3 +24,17 @@
             <input id="isGrettyDamage" class="check" type="checkbox" />
         </div>
     </div>
+    <div class="flex-row-wrap w-half">
+        {{#if doubleTapEdge}}
+        <div class="pb-5">
+            <label id="doubleTapEdge" class="dialog-label check">{{ localize "swadeMacro.damageSettingsDialog.content.doubleTap" }}</label>
+            <input id="doubleTapEdge" class="readonly" style="width: 50px;" type="number" value="1" readonly />
+        </div>
+        {{/if}}
+        {{#if threeRoundBurstAbility}}
+        <div class="pb-5">
+            <label id="threeRoundBurstAbility" class="dialog-label check">{{ localize "swadeMacro.damageSettingsDialog.content.threeRoundBurst"  }}</label>
+            <input id="threeRoundBurstAbility" class="readonly" style="width: 50px;" type="number" value="1" readonly />
+        </div>
+        {{/if}}
+    </div>

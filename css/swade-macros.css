@@ -22,6 +22,10 @@
     width: 50px;
 }
 
+.w-half{
+    width: 50%;
+}
+
 .fs-16 {
     font-size: 11px;
 }
@@ -152,4 +156,8 @@ input.check {
 .chat-button {
     display: flex; 
     padding-top: 5px;
+}
+
+input.readonly{
+    background-color: inherit;
 }

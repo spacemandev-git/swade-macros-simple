@@ -59,7 +59,13 @@
     </div>
     <div class="pb-5">
         <label for="trackAmmo" class="dialog-label check">{{ localize "swadeMacro.rangeCombatDialog.content.trackAmmo"}}</label>
+        {{#if trackAmmo}}
         <input id="trackAmmo" class="check" type="checkbox" checked />
+        {{/if}}
+        {{#if notTrackAmmo}}
+        <input id="trackAmmo" class="check" type="checkbox" />
+        {{/if}}
+
     </div>
 </div>
 <div class="text-center pb-5">

@@ -1,5 +1,34 @@
+function i18n(key) {
+    return game.i18n.localize(key);
+}
+
 Hooks.once("init", () => {
 
-    // Apply game settings
+    game.settings.register("swade-macro-simple", "skillShooting", {
+		name: i18n("swadeMacro.settings.skillShooting.name"),
+		hint: i18n("swadeMacro.settings.skillShooting.hint"),
+		scope: "world",
+		config: true,
+		default: "Shooting",
+		type: String
+    });
+    
+    game.settings.register("swade-macro-simple", "skillFighting", {
+		name: i18n("swadeMacro.settings.skillFighting.name"),
+		hint: i18n("swadeMacro.settings.skillFighting.hint"),
+		scope: "world",
+		config: true,
+		default: "Fighting",
+		type: String
+    });
+    
+    game.settings.register("swade-macro-simple", "trackAmmoConsumption", {
+		name: i18n("swadeMacro.settings.trackAmmo.name"),
+		hint: i18n("swadeMacro.settings.trackAmmo.hint"),
+		scope: "world",
+		config: true,
+		default: true,
+		type: Boolean
+	});
     
 });
