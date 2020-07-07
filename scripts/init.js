@@ -5,8 +5,8 @@ function i18n(key) {
 Hooks.once("init", () => {
 
     game.settings.register("swade-macro-simple", "skillShooting", {
-		name: i18n("swadeMacro.settings.skillShooting.name"),
-		hint: i18n("swadeMacro.settings.skillShooting.hint"),
+		name: i18n("swadeMacro.combatFlow.settings.skillShooting.name"),
+		hint: i18n("swadeMacro.combatFlow.settings.skillShooting.hint"),
 		scope: "world",
 		config: true,
 		default: "Shooting",
@@ -14,8 +14,8 @@ Hooks.once("init", () => {
     });
     
     game.settings.register("swade-macro-simple", "skillFighting", {
-		name: i18n("swadeMacro.settings.skillFighting.name"),
-		hint: i18n("swadeMacro.settings.skillFighting.hint"),
+		name: i18n("swadeMacro.combatFlow.settings.skillFighting.name"),
+		hint: i18n("swadeMacro.combatFlow.settings.skillFighting.hint"),
 		scope: "world",
 		config: true,
 		default: "Fighting",
@@ -23,8 +23,8 @@ Hooks.once("init", () => {
     });
     
     game.settings.register("swade-macro-simple", "trackAmmoConsumption", {
-		name: i18n("swadeMacro.settings.trackAmmo.name"),
-		hint: i18n("swadeMacro.settings.trackAmmo.hint"),
+		name: i18n("swadeMacro.combatFlow.settings.trackAmmo.name"),
+		hint: i18n("swadeMacro.combatFlow.settings.trackAmmo.hint"),
 		scope: "world",
 		config: true,
 		default: true,
@@ -32,8 +32,8 @@ Hooks.once("init", () => {
 	});
     
     game.settings.register("swade-macro-simple", "grittyDamage", {
-		name: i18n("swadeMacro.settings.grittyDamage.name"),
-		hint: i18n("swadeMacro.settings.grittyDamage.hint"),
+		name: i18n("swadeMacro.combatFlow.settings.grittyDamage.name"),
+		hint: i18n("swadeMacro.combatFlow.settings.grittyDamage.hint"),
 		scope: "world",
 		config: true,
 		default: false,
