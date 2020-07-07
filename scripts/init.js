@@ -31,4 +31,13 @@ Hooks.once("init", () => {
 		type: Boolean
 	});
     
+    game.settings.register("swade-macro-simple", "grittyDamage", {
+		name: i18n("swadeMacro.settings.grittyDamage.name"),
+		hint: i18n("swadeMacro.settings.grittyDamage.hint"),
+		scope: "world",
+		config: true,
+		default: false,
+		type: Boolean
+	});
+
 });

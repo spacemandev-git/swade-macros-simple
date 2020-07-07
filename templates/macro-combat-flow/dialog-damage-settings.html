@@ -21,7 +21,12 @@
         </div>
         <div class="pb-5">
             <label for="isGrettyDamage" class="dialog-label check">{{ localize "swadeMacro.damageSettingsDialog.grittyDamage" }}</label>
+            {{#if isGrittyDamage}}
+            <input id="isGrettyDamage" class="check" type="checkbox" checked />
+            {{/if}}
+            {{#if notGrittyDamage}}
             <input id="isGrettyDamage" class="check" type="checkbox" />
+            {{/if}}
         </div>
     </div>
     <div class="flex-row-wrap w-half">

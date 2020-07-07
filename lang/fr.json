@@ -5,6 +5,8 @@
     "swadeMacro.settings.skillFighting.hint" :"Définissez le nom de la compétence de combat",
     "swadeMacro.settings.trackAmmo.name" :"Appliquer la consommation des munitions : ",
     "swadeMacro.settings.trackAmmo.hint" :"Paramètre par défaut sur le suivi de la consommation des munitions lors d'attaque de tir",
+    "swadeMacro.settings.grittyDamage.name" :"Appliquer la règle \"Gritty Damage\" : ",
+    "swadeMacro.settings.grittyDamage.hint" :"Paramètre par défaut pour la règle \"Gritty Damage\"",
 
     "swadeMacro.ui.notification.needActor" : "Vous devenez sélectionner votre token afin de pouvoir attaquer",
     "swadeMacro.ui.notification.actorShaken" : "Vous êtes secoué, vous ne pouvez pas attaquer",

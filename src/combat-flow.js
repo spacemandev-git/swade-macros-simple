@@ -132,7 +132,7 @@ async function rangedAttackForm(){
     //templateWeaponsList += `<option value="${wep.name}">${wep.name} | RoF ${wep.data.data.rof} | shots ${wep.data.data.shots} </option>`;
     // Prepare range atack form template
     let trackAmmoConsumption = game.settings.get("swade-macro-simple", "trackAmmoConsumption");
-    let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-range-attack.html",{weapons : rangeWeapons, trackAmmo : trackAmmoConsumption ? true : false, notTrackAmmo : trackAmmoConsumption ? false : true });
+    let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-range-attack.html",{weapons : rangeWeapons, trackAmmo : trackAmmoConsumption, notTrackAmmo : !trackAmmoConsumption });
 
     // Show form
     if (isValidConditions) {
@@ -161,10 +161,13 @@ async function damageSettings(params, eventTarget)
 {
     let doubleTapEdge = params.doubleTapEdge;
     let threeRoundBurstAbility = params.threeRoundBurstAbility;
+    let grittyDamage = game.settings.get("swade-macro-simple", "grittyDamage");
 
     let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-damage-settings.html", {
         doubleTapEdge : doubleTapEdge,
-        threeRoundBurstAbility : threeRoundBurstAbility
+        threeRoundBurstAbility : threeRoundBurstAbility,
+        isGrittyDamage : grittyDamage,
+        notGrittyDamage : !grittyDamage
     });
 
     new Dialog({
