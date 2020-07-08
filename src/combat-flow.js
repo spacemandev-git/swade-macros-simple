@@ -108,7 +108,7 @@ async function  meleeAttackForm(){
                 ok: {
                     label: i18n("swadeMacro.meleeCombatDialog.confirmButton"),
                     callback: async (html) => {
-                    commitAttack({ html, attackSkillName : game.settings.get("swade-macro-simple", "skillFighting") });
+                    commitAttack({ html, attackSkillName : game.settings.get("swade-macros-simple", "skillFighting") });
                     },
                 },
                 cancel: {
@@ -131,7 +131,7 @@ async function rangedAttackForm(){
     }
     //templateWeaponsList += `<option value="${wep.name}">${wep.name} | RoF ${wep.data.data.rof} | shots ${wep.data.data.shots} </option>`;
     // Prepare range atack form template
-    let trackAmmoConsumption = game.settings.get("swade-macro-simple", "trackAmmoConsumption");
+    let trackAmmoConsumption = game.settings.get("swade-macros-simple", "trackAmmoConsumption");
     let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-range-attack.html",{weapons : rangeWeapons, trackAmmo : trackAmmoConsumption, notTrackAmmo : !trackAmmoConsumption });
 
     // Show form
@@ -143,7 +143,7 @@ async function rangedAttackForm(){
                 ok: {
                 label: i18n("swadeMacro.rangeCombatDialog.confirmButton"),
                 callback: async (html) => {
-                    commitAttack({ html, attackSkillName : game.settings.get("swade-macro-simple", "skillShooting") });
+                    commitAttack({ html, attackSkillName : game.settings.get("swade-macros-simple", "skillShooting") });
                 },
                 },
                 cancel: {
@@ -161,7 +161,7 @@ async function damageSettings(params, eventTarget)
 {
     let doubleTapEdge = params.doubleTapEdge;
     let threeRoundBurstAbility = params.threeRoundBurstAbility;
-    let grittyDamage = game.settings.get("swade-macro-simple", "grittyDamage");
+    let grittyDamage = game.settings.get("swade-macros-simple", "grittyDamage");
 
     let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-damage-settings.html", {
         doubleTapEdge : doubleTapEdge,
@@ -239,7 +239,7 @@ async function commitAttack(params)
     if (attackSkill === null) attackSkill = { data : { data : { die : { sides : 4, modifier: -2 }, "wild-die" : { sides : 6 }  } } };
 
     //Some check for Ranged Attack
-    if (attackSkillName == game.settings.get("swade-macro-simple", "skillShooting")) {
+    if (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting")) {
         ammoUsed = rofAmmo[nbAttack];
 
         if (threeRoundBurstAbility) ammoUsed = 3;
@@ -287,7 +287,7 @@ async function commitAttack(params)
     skillModPool.push({ mod : "sizeScale", title : i18n("swadeMacro.attack.skillMod.sizeScale"), abilitie : 0, value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
     skillModPool.push({ mod : "doubleTap", title : i18n("swadeMacro.attack.skillMod.doubleTap"), abilitie : 1, value : doubleTapEdge ? 1 : 0 });
     skillModPool.push({ mod : "threeRoundBurst", title : i18n("swadeMacro.attack.skillMod.threeRoundBurst"), abilitie : 1, value : threeRoundBurstAbility ? 1 : 0 });
-    if (attackSkillName == game.settings.get("swade-macro-simple", "skillShooting")) 
+    if (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting")) 
     { 
         skillModPool.push({ mod : "minStrength", title : i18n("swadeMacro.attack.skillMod.minStr"), abilitie : 0, value : weapon.data.data.minStr == "" ? 0 : diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) ? diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) - diceStep.indexOf(weapon.data.data.minStr) : 0});
     }
@@ -306,8 +306,8 @@ async function commitAttack(params)
         el.bgColor = (el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "");
         
         if (el.saved){
-            let result = (el.roll.total + totalMod) >= (attackSkillName == game.settings.get("swade-macro-simple", "skillShooting") ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) + 4 ? { display : i18n("swadeMacro.commitAttackChat.raise"), color : "rgb(0, 0, 255, 0.35)" } :
-            (el.roll.total + totalMod) >= (attackSkillName == game.settings.get("swade-macro-simple", "skillShooting") ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) ? { display : i18n("swadeMacro.commitAttackChat.hit"), color : "rgb(0, 200, 0, 0.35)" } : { display : i18n("swadeMacro.commitAttackChat.miss"), color : "rgb(255, 0, 0, 0.35)" }
+            let result = (el.roll.total + totalMod) >= (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) + 4 ? { display : i18n("swadeMacro.commitAttackChat.raise"), color : "rgb(0, 0, 255, 0.35)" } :
+            (el.roll.total + totalMod) >= (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) ? { display : i18n("swadeMacro.commitAttackChat.hit"), color : "rgb(0, 200, 0, 0.35)" } : { display : i18n("swadeMacro.commitAttackChat.miss"), color : "rgb(255, 0, 0, 0.35)" }
             if (result.display != i18n("swadeMacro.commitAttackChat.miss")) successResultPool.push(result.display);
             result.total = (el.roll.total + totalMod);
             el.display = result;
@@ -321,11 +321,11 @@ async function commitAttack(params)
             weaponName : weapon.data.name,
             weaponNotes : weapon.data.data.notes,
             targetName : currentTarget.data.name,
-            isRangeAttack : attackSkillName == game.settings.get("swade-macro-simple", "skillShooting"),
+            isRangeAttack : attackSkillName == game.settings.get("swade-macros-simple", "skillShooting"),
             ammoUsed : ammoUsed,
             bennieUsed : bennieUsed == undefined ? 0 : bennieUsed,
             abilitites : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", "),
-            difficulty : attackSkillName == game.settings.get("swade-macro-simple", "skillShooting") ? "4" : currentTarget.data.data.stats.parry.value,
+            difficulty : attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") ? "4" : currentTarget.data.data.stats.parry.value,
             modTitle : skillModPool.filter((el) => el.value != 0).map((el) => el.title + " : " + el.value).join("\n"),
             modValue : totalMod,
             isHit : successResultPool.length > 0 && !criticalFailure,
@@ -352,7 +352,7 @@ async function commitAttack(params)
         }
 
         // Remove ammo from weapon
-        if (attackSkillName == game.settings.get("swade-macro-simple", "skillShooting") && trackAmmo) {
+        if (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") && trackAmmo) {
             let newShots = (weapon.data.data.shots -= ammoUsed);
             weapon.update({ "data.shots": newShots });
         };
@@ -423,7 +423,7 @@ async function damageResult(params)
         let weaponDamage = weapon.data.data.damage;
 
         // Downgrade weapon damage for minStr restrcitions
-        if (attackSkillName == game.settings.get("swade-macro-simple", "skillFighting") && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
+        if (attackSkillName == game.settings.get("swade-macros-simple", "skillFighting") && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
         {
             weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "");
         }     
