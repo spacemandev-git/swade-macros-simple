@@ -285,8 +285,8 @@ async function commitAttack(params)
     skillModPool.push({ mod : "vulnerable", title : i18n("swadeMacro.attack.skillMod.vulnerable" ), abilitie : 0, value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
     skillModPool.push({ mod : "woundsFatigue", title : i18n("swadeMacro.attack.skillMod.woundsFatigue" ), abilitie : 0, value : currentActor.calcWoundFatigePenalties()});
     skillModPool.push({ mod : "sizeScale", title : i18n("swadeMacro.attack.skillMod.sizeScale"), abilitie : 0, value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
-    skillModPool.push({ mod : "doubleTap", title : i18n("swadeMacro.attack.skillMod.doubleTap"), abilitie : 1, value : doubleTapEdge ? 1 : 0 });
-    skillModPool.push({ mod : "threeRoundBurst", title : i18n("swadeMacro.attack.skillMod.threeRoundBurst"), abilitie : 1, value : threeRoundBurstAbility ? 1 : 0 });
+    skillModPool.push({ mod : "doubleTap", title : i18n("swadeMacro.attack.skillMod.doubleTap"), abilitie : doubleTapEdge ? 1 : 0, value : doubleTapEdge ? 1 : 0 });
+    skillModPool.push({ mod : "threeRoundBurst", title : i18n("swadeMacro.attack.skillMod.threeRoundBurst"), abilitie : threeRoundBurstAbility ? 1 : 0, value : threeRoundBurstAbility ? 1 : 0 });
     if (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting")) 
     { 
         skillModPool.push({ mod : "minStrength", title : i18n("swadeMacro.attack.skillMod.minStr"), abilitie : 0, value : weapon.data.data.minStr == "" ? 0 : diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) ? diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides)) - diceStep.indexOf(weapon.data.data.minStr) : 0});
@@ -324,6 +324,7 @@ async function commitAttack(params)
             isRangeAttack : attackSkillName == game.settings.get("swade-macros-simple", "skillShooting"),
             ammoUsed : ammoUsed,
             bennieUsed : bennieUsed == undefined ? 0 : bennieUsed,
+            abilitiesUsed : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", ").length > 0,
             abilitites : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", "),
             difficulty : attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") ? "4" : currentTarget.data.data.stats.parry.value,
             modTitle : skillModPool.filter((el) => el.value != 0).map((el) => el.title + " : " + el.value).join("\n"),
