@@ -14,6 +14,7 @@ This module will use Dice So Nice if that's installed.
 - English
 - French
 - Deutsch
+- Portugues
 ##### Documentation
 ###### use of macro
 <table>
