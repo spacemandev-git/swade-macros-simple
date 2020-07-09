@@ -3,7 +3,7 @@
   "title": "SWADE Macros Simple",
   "description": "A set of automation macros for SWADE",
   "systems": ["swade"],
-  "version": "1.4.6",
+  "version": "1.4.7",
   "authors": [
     { "name" : "spacemandev"}, 
     { "name" : "Nnayl"}

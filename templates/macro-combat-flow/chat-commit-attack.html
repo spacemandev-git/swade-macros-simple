@@ -7,7 +7,7 @@
             <span>{{ localize "swadeMacro.commitAttackChat.ambiancePart1"}} <b>{{targetName}}</b> {{ localize "swadeMacro.commitAttackChat.ambiancePart2"}} <b>{{weaponName}}</b></span>
         </div>
     </div>
-    {{#if rangeAttack}}
+    {{#if isRangeAttack}}
     <p><i><b>{{ammoUsed}}</b> {{ localize "swadeMacro.commitAttackChat.ammoUsed"}}</i></p>
     {{/if}}
     <p><i>{{localize "swadeMacro.commitAttackChat.weaponNotes"}} {{weaponNotes}}</i></p>

@@ -354,14 +354,15 @@ async function commitAttack(params)
 
         // Remove ammo from weapon
         if (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") && trackAmmo) {
+            console.log(weapon._id);
             let newShots = (weapon.data.data.shots -= ammoUsed);
-            weapon.update({ "data.shots": newShots });
+            weapon.update({ "data.shots": newShots.toString() });
+            //currentActor.updateOwnedItem({_id: weapon._id,"data.shots": newShots.toString()});
         };
 
         // Displat chat template
         // Check can use "So Nice Dices" mod effects
         game.dice3d === undefined ? printMessage(chatMessage) : game.dice3d.showForRoll(diceResultPool.map((el) => el.roll)).then(displayed => {
-            
             printMessage(chatMessage);
         });   
     }
