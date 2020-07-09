@@ -197,6 +197,7 @@ async function commitAttack(params)
     let html = params.html;
     let attackSkillName = params.attackSkillName;
     let bennieUsed = params.bennieUsed;
+    bennieUsed == undefined ? 0 : bennieUsed;
 
     let ammoUsed = 0;
 
@@ -323,7 +324,7 @@ async function commitAttack(params)
             targetName : currentTarget.data.name,
             isRangeAttack : attackSkillName == game.settings.get("swade-macros-simple", "skillShooting"),
             ammoUsed : ammoUsed,
-            bennieUsed : bennieUsed == undefined ? 0 : bennieUsed,
+            bennieUsed : bennieUsed,
             abilitiesUsed : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", ").length > 0,
             abilitites : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", "),
             difficulty : attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") ? "4" : currentTarget.data.data.stats.parry.value,
@@ -353,7 +354,7 @@ async function commitAttack(params)
         }
 
         // Remove ammo from weapon
-        if (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") && trackAmmo) {
+        if (attackSkillName == game.settings.get("swade-macros-simple", "skillShooting") && trackAmmo && !bennieUsed) {
             console.log(weapon._id);
             let newShots = (weapon.data.data.shots -= ammoUsed);
             weapon.update({ "data.shots": newShots.toString() });
@@ -375,6 +376,8 @@ async function damageResult(params)
     let successResultPool = params.successResultPool;
     let attackSkillName = params.attackSkillName;
     let bennieUsed = params.bennieUsed;
+    bennieUsed == undefined ? 0 : bennieUsed;
+
     let html = params.html;
     let doubleTapEdge = params.doubleTapEdge;
     let threeRoundBurstAbility = params.threeRoundBurstAbility;
@@ -509,7 +512,7 @@ async function damageResult(params)
         weaponAp : weapon.data.data.ap,
         targetName : currentTarget.data.name,
         toughnessValue : currentTarget.data.data.stats.toughness.value,
-        bennieUsed : bennieUsed == undefined ? 0 : bennieUsed,
+        bennieUsed : bennieUsed,
         armorTitle : "armor : " + armorToughness + "\n" + "cover : " + coverBonus,
         armorValue : armorToughness + parseInt(coverBonus),
         damageModTitle : damageModPool.map((el) => el.title + " : " + el.value).join("\n"),
