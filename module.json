@@ -3,11 +3,8 @@
   "title": "SWADE Macros Simple",
   "description": "A set of automation macros for SWADE",
   "systems": ["swade"],
-  "version": "1.4.9",
-  "authors": [
-    { "name" : "spacemandev"}, 
-    { "name" : "Nnayl"}
-  ],
+  "version": "1.4.10",
+  "authors": [{ "name": "spacemandev" }, { "name": "Nnayl" }],
   "scripts": [],
   "packs": [
     {
@@ -20,34 +17,32 @@
     }
   ],
   "languages": [
-		{
-			"lang": "en",
-			"name": "English",
-			"path": "lang/en.json"
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
     },
     {
-			"lang": "fr",
-			"name": "Français",
-			"path": "lang/fr.json"
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json"
     },
     {
-			"lang": "de",
-			"name": "Deutsch",
-			"path": "lang/de.json"
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
     },
     {
       "lang": "pt",
-			"name": "Portugues",
-			"path": "lang/por.json"
+      "name": "Portugues",
+      "path": "lang/por.json"
     }
   ],
-  "esmodules": [
-		"./scripts/init.js"
-  ],
+  "esmodules": ["./scripts/init.js"],
   "styles": ["./css/swade-macros.css"],
   "url": "https://github.com/Brownie79/swade-macros-simple",
   "minimumCoreVersion": "0.6.0",
   "compatibleCoreVersion": "0.6.5",
   "manifest": "https://raw.githubusercontent.com/Brownie79/swade-macros-simple/master/module.json",
-  "download": "https://github.com/Brownie79/swade-macros-simple/archive/v1.4.9.zip"
+  "download": "https://github.com/Brownie79/swade-macros-simple/archive/v1.4.10.zip"
 }
