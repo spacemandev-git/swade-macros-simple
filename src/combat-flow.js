@@ -284,7 +284,7 @@ async function commitAttack(params)
     skillModPool.push({ mod : "isUnstable", title : i18n("swadeMacro.attack.skillMod.isUnstable"), abilitie : 0, value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
     skillModPool.push({ mod : "distracted", title : i18n("swadeMacro.attack.skillMod.distracted"), abilitie : 0, value : currentActor.data.data.status.isDistracted ? -2 : 0});
     skillModPool.push({ mod : "vulnerable", title : i18n("swadeMacro.attack.skillMod.vulnerable" ), abilitie : 0, value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
-    skillModPool.push({ mod : "woundsFatigue", title : i18n("swadeMacro.attack.skillMod.woundsFatigue" ), abilitie : 0, value : currentActor.calcWoundFatigePenalties()});
+    skillModPool.push({ mod : "woundsFatigue", title : i18n("swadeMacro.attack.skillMod.woundsFatigue" ), abilitie : 0, value : (currentActor.calcWoundPenalties() + currentActor.calcFatiguePenalties())});
     skillModPool.push({ mod : "sizeScale", title : i18n("swadeMacro.attack.skillMod.sizeScale"), abilitie : 0, value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
     skillModPool.push({ mod : "doubleTap", title : i18n("swadeMacro.attack.skillMod.doubleTap"), abilitie : doubleTapEdge ? 1 : 0, value : doubleTapEdge ? 1 : 0 });
     skillModPool.push({ mod : "threeRoundBurst", title : i18n("swadeMacro.attack.skillMod.threeRoundBurst"), abilitie : threeRoundBurstAbility ? 1 : 0, value : threeRoundBurstAbility ? 1 : 0 });

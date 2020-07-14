@@ -124,7 +124,7 @@ function fireWeapon(html) {
   let rangeMod = parseInt(html.find("#rangePenalty")[0].value);
   let otherMod = parseInt(html.find("#otherMod")[0].value);
   let theDropMod = html.find("#theDrop")[0].checked ? 4 : 0;
-  let woundMod = selected.calcWoundFatigePenalties();
+  let woundMod =  (selected.calcWoundPenalties() + selected.calcFatiguePenalties()); //selected.calcWoundFatigePenalties();
   let statusMod = selected.calcStatusPenalties();
 
   let totalMod =

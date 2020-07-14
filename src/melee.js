@@ -84,7 +84,8 @@ function rollFighting(html) {
   otherMods += parseInt(html.find("#calledShot")[0].value);
   otherMods += html.find("#unarmedDefender")[0].checked ? 2 : 0;
   otherMods += html.find("#theDrop")[0].checked ? 4 : 0;
-  otherMods += selected.calcWoundFatigePenalties();
+  otherMods += selected.calcWoundPenalties();
+  otherMods += selected.calcFatiguePenalties();
   otherMods += selected.calcStatusPenalties();
   let otherModifier = otherMods >= 0 ? `+${otherMods}` : parseInt(otherMods);
 
