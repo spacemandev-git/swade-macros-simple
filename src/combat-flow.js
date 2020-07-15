@@ -124,15 +124,20 @@ async function  meleeAttackForm(){
 async function rangedAttackForm(){
 
     let rangeWeapons = weapons.filter((el) => el.data.data.range != "0" && el.data.data.range != "")
+    
     // Check if template is not empty
     if (rangeWeapons.length == 0) {
         ui.notifications.warn(i18n("swadeMacro.ui.notification.noWeaponsMessage"));
         isValidConditions = false;
     }
-    //templateWeaponsList += `<option value="${wep.name}">${wep.name} | RoF ${wep.data.data.rof} | shots ${wep.data.data.shots} </option>`;
+    
     // Prepare range atack form template
     let trackAmmoConsumption = game.settings.get("swade-macros-simple", "trackAmmoConsumption");
-    let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-range-attack.html",{weapons : rangeWeapons, trackAmmo : trackAmmoConsumption, notTrackAmmo : !trackAmmoConsumption });
+    let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-range-attack.html",{
+        weapons : rangeWeapons, 
+        trackAmmo : trackAmmoConsumption, 
+        notTrackAmmo : !trackAmmoConsumption 
+    });
 
     // Show form
     if (isValidConditions) {
@@ -162,12 +167,14 @@ async function damageSettings(params, eventTarget)
     let doubleTapEdge = params.doubleTapEdge;
     let threeRoundBurstAbility = params.threeRoundBurstAbility;
     let grittyDamage = game.settings.get("swade-macros-simple", "grittyDamage");
+    let isRangeAttack = params.isRangeAttack;
 
     let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-damage-settings.html", {
         doubleTapEdge : doubleTapEdge,
         threeRoundBurstAbility : threeRoundBurstAbility,
         isGrittyDamage : grittyDamage,
-        notGrittyDamage : !grittyDamage
+        notGrittyDamage : !grittyDamage,
+        isRangeAttack : isRangeAttack
     });
 
     new Dialog({
@@ -278,7 +285,7 @@ async function commitAttack(params)
     // Build Modifiers
     let skillModPool = [];
     //skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
-    skillModPool.push({ mod : "rangePenalty", title : i18n("swadeMacro.attack.skillMod.rangePenality"), abilitie : 0, value : html.find("#rangePenalty")[0] === undefined ? 0 : parseInt(html.find("#rangePenalty")[0].value) });
+    skillModPool.push({ mod : "rangePenality", title : i18n("swadeMacro.attack.skillMod.rangePenality"), abilitie : 0, value : html.find("#rangePenality")[0] === undefined ? 0 : parseInt(html.find("#rangePenality")[0].value) });
     skillModPool.push({ mod : "targetCover", title : i18n("swadeMacro.attack.skillMod.targetCover"), abilitie : 0, value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
     skillModPool.push({ mod : "isRecoil", title : i18n("swadeMacro.attack.skillMod.isRecoil"), abilitie : 0, value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
     skillModPool.push({ mod : "isUnstable", title : i18n("swadeMacro.attack.skillMod.isUnstable"), abilitie : 0, value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
@@ -344,12 +351,20 @@ async function commitAttack(params)
                 commitAttack(params);
             }); 
         }
-        
+        console.log(skillModPool.filter((el) => el.mod == "rangePenality")[0]);
         // Apply damage button and listener to chatTemplate if 1+ success
         if (successResultPool.length > 0) {
             // Add event to chat message html element
             addEventListenerOnHtmlElement("#callDamageButton", 'click', (e) => { 
-                damageSettings({weapon, successResultPool, attackSkillName, doubleTapEdge, threeRoundBurstAbility}, e.target);
+                damageSettings({
+                    weapon, 
+                    successResultPool, 
+                    attackSkillName, 
+                    doubleTapEdge, 
+                    threeRoundBurstAbility, 
+                    isRangeAttack : attackSkillName == game.settings.get("swade-macros-simple", "skillShooting"),
+                    rangePenality : skillModPool.filter((el) => el.mod == "rangePenality")[0].value
+                }, e.target);
             }); 
         }
 
@@ -382,6 +397,8 @@ async function damageResult(params)
     let doubleTapEdge = params.doubleTapEdge;
     let threeRoundBurstAbility = params.threeRoundBurstAbility;
 
+    let rangePenality = params.rangePenality;
+
     // SWADE rule, injury table page 95
     let criticalInjury = [
         { value : [ 2 ], injury : i18n("swadeMacro.damageResultChat.unmentionables"), subInjury : undefined },
@@ -413,6 +430,9 @@ async function damageResult(params)
     // get ignore armor
     let ignoreAmor = html.find("#ignoreArmor")[0] === undefined ? false : html.find("#ignoreArmor")[0].checked ? true : false;
 
+    // get shotgun template use
+    let isShotgunTemplate = html.find("#isShotgunTemplate")[0] === undefined ? false : html.find("#isShotgunTemplate")[0].checked ? true : false;
+
     // get damage modification
     if (doubleTapEdge) damageModPool.push({ mod : "doubleTap", title : i18n("swadeMacro.damageResultChat.doubleTap"), abilitie : 0, value : 1});
     if (threeRoundBurstAbility) damageModPool.push({ mod : "threeRoundBurst", title : i18n("swadeMacro.damageResultChat.threeRoundBurst"), abilitie : 0, value : 1});
@@ -425,17 +445,34 @@ async function damageResult(params)
     // Roll Dices
     for (let i = 0; i < successResultPool.length; i++) {
         
-        let weaponDamage = weapon.data.data.damage;
-
-        // Downgrade weapon damage for minStr restrcitions
-        if (attackSkillName == game.settings.get("swade-macros-simple", "skillFighting") && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
-        {
-            weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "");
-        }     
-
-        // Update @str from Strenght dice
-        let regexStr = /[@]str/g;
-        weaponDamage = weaponDamage.replace(regexStr, "1d" + currentActor.data.data.attributes.strength.die.sides)
+        let weaponDamage;
+        if (isShotgunTemplate) {
+            switch (rangePenality) {
+                case 0:
+                    weaponDamage = "3d6";
+                    break;
+                case -2:
+                    weaponDamage = "2d6";
+                    break;
+                case -4:
+                    weaponDamage = "1d6";
+                    break;
+                default:
+                    weaponDamage = "0";
+                    break;
+            }
+        }else{
+            weaponDamage = weapon.data.data.damage;
+            // Downgrade weapon damage for minStr restrcitions
+            if (attackSkillName == game.settings.get("swade-macros-simple", "skillFighting") && weapon.data.data.minStr != "" && diceStep.indexOf(weapon.data.data.minStr) > diceStep.indexOf(("d" + currentActor.data.data.attributes.strength.die.sides))) 
+            {
+                weaponDamage = "@str+1d" + currentActor.data.data.attributes.strength.die.sides + " + " + (currentActor.data.data.attributes.strength.die.modifier != "0" ? currentActor.data.data.attributes.strength.die.modifier : "");
+            }     
+    
+            // Update @str from Strenght dice
+            let regexStr = /[@]str/g;
+            weaponDamage = weaponDamage.replace(regexStr, "1d" + currentActor.data.data.attributes.strength.die.sides)
+        }
 
         // Add Raise
         weaponDamage += (successResultPool[i] == i18n("swadeMacro.commitAttackChat.raise") ? " + 1d6" : "")

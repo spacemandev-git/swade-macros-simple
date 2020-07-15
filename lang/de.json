@@ -61,6 +61,7 @@
     "swadeMacro.damageSettingsDialog.content.threeRoundBurst" : "3-Schuss-Feuerstoß (3F) : ",
     "swadeMacro.damageSettingsDialog.confirmButton" : "Bestätigen",
     "swadeMacro.damageSettingsDialog.cancelButton" : "Abbrechen",
+    "swadeMacro.damageSettingsDialog.shotgunTemplate" : "Dispersionsschaden (1-3d6)",
 
     "swadeMacro.attack.skillMod.rangePenality" : "Reichweiten-Abzug",
     "swadeMacro.attack.skillMod.targetCover" : "Zieldeckung",

@@ -28,6 +28,12 @@
             <input id="isGrettyDamage" class="check" type="checkbox" />
             {{/if}}
         </div>
+        {{#if isRangeAttack}}
+        <div class="pb-5">
+            <label for="isShotgunTemplate" class="dialog-label check">{{ localize "swadeMacro.damageSettingsDialog.shotgunTemplate" }}</label>
+            <input id="isShotgunTemplate" class="check" type="checkbox" />
+        </div>
+        {{/if}}
     </div>
     <div class="flex-row-wrap w-half">
         {{#if doubleTapEdge}}

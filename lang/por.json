@@ -61,6 +61,7 @@
     "swadeMacro.damageSettingsDialog.content.threeRoundBurst" : "Rajada de 3 Balas : ",
     "swadeMacro.damageSettingsDialog.confirmButton" : "Confirmar",
     "swadeMacro.damageSettingsDialog.cancelButton" : "Cancelar",
+    "swadeMacro.damageSettingsDialog.shotgunTemplate" : "Danos por dispersão (1-3d6)",
 
     "swadeMacro.attack.skillMod.rangePenality" : "Penalidade de Distãncia",
     "swadeMacro.attack.skillMod.targetCover" : "Cobertura do Alvo",

@@ -61,6 +61,7 @@
     "swadeMacro.damageSettingsDialog.title" : "Options de dégâts",
     "swadeMacro.damageSettingsDialog.confirmButton" : "Confirmer",
     "swadeMacro.damageSettingsDialog.cancelButton" : "Annuler",
+    "swadeMacro.damageSettingsDialog.shotgunTemplate" : "Dégats de dispersion (1-3d6)",
 
     "swadeMacro.attack.skillMod.rangePenality" : "Pénalité de distance",
     "swadeMacro.attack.skillMod.targetCover" : "Courverture de la cible",

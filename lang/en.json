@@ -61,6 +61,7 @@
     "swadeMacro.damageSettingsDialog.content.threeRoundBurst" : "Three round burst : ",
     "swadeMacro.damageSettingsDialog.confirmButton" : "Confirm",
     "swadeMacro.damageSettingsDialog.cancelButton" : "Cancel",
+    "swadeMacro.damageSettingsDialog.shotgunTemplate" : "Use damage shotgun (1-3d6)",
 
     "swadeMacro.attack.skillMod.rangePenality" : "Range Penality",
     "swadeMacro.attack.skillMod.targetCover" : "Target Cover",
