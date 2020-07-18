@@ -1,9 +1,16 @@
 # SWADE Macros Simple
 A set of useful macros for the SWADE system. Growing list, currently:
-### Card Draw Macro
+### Card Draw Macro (Spacemandev)
 Draws random cards as tiles on top of the page.
 
-### Combat Flow
+### Adventure Card Macro (lipefl)
+Macro for giving adventure cards to characters with a prompt similar to Roll20 (you'll need a rollable table with the cards and a item to hold the cards)
+Mini Tutorial
+1 - Import the cards to a rollable table (i recommend Card Deck Importer - follow the instructions there). Name the rollable table AdventureDeck or change below.
+2 - Create an item (gear) named Adventure Card. Give it to the characters that will use it.
+3 - Run the macro.
+
+### Combat Flow (Nnayl)
 A full combat sequence between a actor and this target. Select attack type, weapons and set your mod for a automated rolls and calculated results, from attack to damage. You can reroll with Bennies and set some settings for damage rolls. This module will use Dice So Nice if that's installed.
 
 ###### Localization support
