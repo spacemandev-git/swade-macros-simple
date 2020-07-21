@@ -367,7 +367,7 @@ async function commitAttack(params)
     
                     if (valid) {
                         e.target.style.display = "none";
-                        html[0].querySelector("#callDamageButton").style.display = "none";
+                        if (html[0].querySelector("#callDamageButton") != null) html[0].querySelector("#callDamageButton").style.display = "none";
                         params.bennieUsed = true;
                         commitAttack(params);
                     }
