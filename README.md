@@ -9,9 +9,10 @@ Draws random cards as tiles on top of the page.
 - **Horizontal/vertical spacing:**: You can set how much space will be between the cards.
 
 #### Example Chase
+![Chase](img/readme/chase.jpg)
 
 #### Example Dogfight
-
+![Dogfight](img/readme/dogfight.jpg)
 
 ### Adventure Card Macro (lipefl)
 Macro for giving adventure cards to characters with a prompt similar to Roll20 (you'll need a rollable table with the cards and a item to hold the cards)
