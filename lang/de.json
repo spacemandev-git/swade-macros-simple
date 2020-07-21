@@ -9,6 +9,10 @@
     "swadeMacro.combatFlow.settings.grittyDamage.hint" :"Grundeinstellung für Fieser Schaden",
     "swadeMacro.combatFlow.settings.trackBennies.name" : "Kampfablauf - Verfolgen Sie den Verbrauch von Bennies : ",
     "swadeMacro.combatFlow.settings.trackBennies.hint" : "Parameter zur automatischen Verwendung von Bennies beim Drücken der Reroll-Taste",
+    "swadeMacro.combatFlow.settings.displayOption.name" : "Combat Flow - Select macro display settings : ",
+    "swadeMacro.combatFlow.settings.displayOption.hint" : "Full - All indicators. Lite - Not show target metrics and damage indicators",
+    "swadeMacro.combatFlow.settings.displayOption.choices.1" : "Full",
+    "swadeMacro.combatFlow.settings.displayOption.choices.2" : "Lite",
 
     "swadeMacro.ui.notification.needActor" : "Bitte einen Token wählen, um angreifen zu können",
     "swadeMacro.ui.notification.actorShaken" : "Du bist angeschlagen, du kannst nicht angreifen",

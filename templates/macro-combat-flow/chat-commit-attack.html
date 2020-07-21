@@ -46,16 +46,15 @@
                     <div class="flex-auto">
                         <div class="item bg-red"><label style="color : rgb(200, 0, 0);">!! {{ localize "swadeMacro.commitAttackChat.criticalFailure"}} !!</label></div>
                     </div>   
-                    {{/if}}
-                    {{#if isNotCriticalFailure}}
+                    {{else}}
                     {{#each diceResultPool}}
-                    {{# if this.saved}}
-                    <div class="flex-auto">
-                        <div class="item" style="background-color : {{this.display.color}}" title="{{this.roll.total}} ({{this.display.total}})">
-                            <label class="white">{{this.display.display}}</label>
+                        {{# if this.saved}}
+                        <div class="flex-auto">
+                            <div class="item" style="background-color : {{this.display.color}}" title="{{this.roll.total}} ({{this.display.total}})">
+                                <label class="white">{{this.display.display}}</label>
+                            </div>
                         </div>
-                    </div>
-                    {{/if}}
+                        {{/if}}
                     {{/each}}
                     {{/if}}
                 </div>
@@ -63,11 +62,11 @@
         </div>
     </div>
 </div>
-{{#if isNotCriticalFailure}}
+{{#unless isCriticalFailure}}
 <div class="chat-button">
     <button id="reRollButton"><center>{{localize "swadeMacro.commitAttackChat.useBennie"}}</center></button>
 </div>
-{{/if}}
+{{/unless}}
 {{#if isHit}}
 <div class="chat-button">
     <button id="callDamageButton"><center>{{localize "swadeMacro.commitAttackChat.applyDamage"}}</center></button>

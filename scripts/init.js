@@ -4,6 +4,19 @@ function i18n(key) {
 
 Hooks.once("init", () => {
 
+	game.settings.register("swade-macros-simple", "displayOption", {
+		name: i18n("swadeMacro.combatFlow.settings.displayOption.name"),
+		hint: i18n("swadeMacro.combatFlow.settings.displayOption.hint"),
+		scope: "world",
+		config: true,
+		default: 1,
+		type: Number,
+		choices: {
+			1: i18n("swadeMacro.combatFlow.settings.displayOption.choices.1"),
+			2: i18n("swadeMacro.combatFlow.settings.displayOption.choices.2")
+		}
+	});
+
     game.settings.register("swade-macros-simple", "skillShooting", {
 		name: i18n("swadeMacro.combatFlow.settings.skillShooting.name"),
 		hint: i18n("swadeMacro.combatFlow.settings.skillShooting.hint"),

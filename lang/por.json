@@ -9,6 +9,10 @@
     "swadeMacro.combatFlow.settings.grittyDamage.hint" :"Default parameters to gritty damage",
     "swadeMacro.combatFlow.settings.trackBennies.name" : "Fluxo de Combate - Controlar o consumo de bennies : ",
     "swadeMacro.combatFlow.settings.trackBennies.hint" : "Parâmetro para usar automaticamente bennies quando o botão reroll é pressionado",
+    "swadeMacro.combatFlow.settings.displayOption.name" : "Combat Flow - Select macro display settings : ",
+    "swadeMacro.combatFlow.settings.displayOption.hint" : "Full - All indicators. Lite - Not show target metrics and damage indicators",
+    "swadeMacro.combatFlow.settings.displayOption.choices.1" : "Full",
+    "swadeMacro.combatFlow.settings.displayOption.choices.2" : "Lite",
 
     "swadeMacro.ui.notification.needActor" : "Para atacar você precisa selecionar um token",
     "swadeMacro.ui.notification.actorShaken" : "Você está abalado, não pode atacar",
