@@ -8,9 +8,14 @@ Draws random cards as tiles on top of the page.
 - **Just stack up all cards:** This option stacks all cards.
 - **Horizontal/vertical spacing:**: You can set how much space will be between the cards.
 
+#### User Interface
+![User Interface](img/readme/options.jpg)
+
 #### Example Chase
+![Chase cards](img/readme/chase.jpg)
 
 #### Example Dogfight
+![dogfight cards](img/readme/dogfight.jpg)
 
 ### Adventure Card Macro (lipefl)
 Macro for giving adventure cards to characters with a prompt similar to Roll20 (you'll need a rollable table with the cards and a item to hold the cards)
