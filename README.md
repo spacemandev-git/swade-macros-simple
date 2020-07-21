@@ -1,14 +1,16 @@
 # SWADE Macros Simple
 A set of useful macros for the SWADE system. Growing list, currently:
-### Card Draw Macro (Spacemandev)
+### Card Draw Macro (Spacemandev/brunocalado)
 Draws random cards as tiles on top of the page.
 
-**Options**
-- Reset?: Before draw the cards the table will be reset. 
-- Chase?: This option put the cards side by side. Unckeck it and the cards will be stacked.
+#### Options
+-  **Reset Table?:** Before draw the cards the table will be reset. Uncheck this to keep drawing cards without repeat.
+- **Just stack up all cards:** This option stacks all cards.
+- **Horizontal/vertical spacing:**: You can set how much space will be between the cards.
 
-**TODO**
-- Dog fighting 
+#### Example Chase
+
+#### Example Dogfight
 
 ### Adventure Card Macro (lipefl)
 Macro for giving adventure cards to characters with a prompt similar to Roll20 (you'll need a rollable table with the cards and a item to hold the cards)
