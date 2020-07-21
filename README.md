@@ -6,8 +6,12 @@ Draws random cards as tiles on top of the page.
 #### Options
 -  **Reset Table?:** Before draw the cards the table will be reset. Uncheck this to keep drawing cards without repeat.
 - **Just stack up all cards:** This option stacks all cards.
-- **Dogfight:** After choose the desired amount of cards you can set how they will be placed.
 - **Horizontal/vertical spacing:**: You can set how much space will be between the cards.
+
+#### Example Chase
+
+#### Example Dogfight
+
 
 ### Adventure Card Macro (lipefl)
 Macro for giving adventure cards to characters with a prompt similar to Roll20 (you'll need a rollable table with the cards and a item to hold the cards)

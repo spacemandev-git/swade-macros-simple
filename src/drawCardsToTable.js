@@ -18,7 +18,9 @@ function getRequirements() {
 
   let template = `
   <p>Table to Draw From: <select id="tableName">${cardsList}</select></p>
-  <p>Number of Cards to Draw: <input id="drawAmt" type="number" min="1" style="width: 50px;" value=9></p>
+  <p>
+    Cards to Draw (Lines x Columns): <input id="dogFightLines" type="number" min="1" style="width: 50px;" value=1> x <input id="dogFightColumns" type="number" min="1" style="width: 50px;" value=9>
+  </p>  
   <p>
     Height: <input id="height" type="number" min="1" style="width: 50px" value=150>
     Width: <input id="width" type="number" min="1" style="width: 50px" value=107>
@@ -32,10 +34,6 @@ function getRequirements() {
     <input type="checkbox" id="stackupcards"/>
     Just stack up all cards
   </p>  
-  <br />
-  <p>
-    Dogfight Lines x Columns: <input id="dogFightLines" type="number" min="1" style="width: 50px;" value=1> x <input id="dogFightColumns" type="number" min="1" style="width: 50px;" value=9>
-  </p>
   <br />  
   <p>
     <h3>Horizontal spacing between cards</h3>
@@ -71,7 +69,7 @@ async function makeTiles(html) {
   let resetTable = html.find("#reset")[0].value;
   const stackupcards = html.find("#stackupcards")[0].checked;
   let tableName = html.find("#tableName")[0].value;
-  let cardsToDraw = html.find("#drawAmt")[0].value;
+  let cardsToDraw = dogFightLines*dogFightColumns;
   let _height = html.find("#height")[0].value;
   let _width = html.find("#width")[0].value;
 
