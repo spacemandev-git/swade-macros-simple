@@ -171,7 +171,7 @@ async function rangedAttackForm(){
 } // end rangedAttackForm
 
 // Settings for damage outpout
-async function damageSettings(params, eventTarget)
+async function damageSettings(params)
 {
     let doubleTapEdge = params.doubleTapEdge;
     let threeRoundBurstAbility = params.threeRoundBurstAbility;
@@ -193,7 +193,6 @@ async function damageSettings(params, eventTarget)
             ok: {
             label: i18n("swadeMacro.damageSettingsDialog.confirmButton"),
             callback: async (html) => {
-                eventTarget.style.display = "none";
                 params.html = html;
                 damageResult(params);
             },
@@ -353,26 +352,29 @@ async function commitAttack(params)
 
         // Apply bennie button and listener to chatTemplate if not critical failure
         if (!criticalFailure) {
-            addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
-                let valid = true;
 
-                if(macroSettings.trackBennies){
-                    if (currentActor.data.data.bennies.value > 0) {
-                        currentActor.update({"data.bennies.value" : currentActor.data.data.bennies.value - 1})
-                    }else{
-                        valid = false;
-                        ui.notifications.warn(i18n("swadeMacro.ui.notification.noBennies"));
+            Hooks.once("renderChatMessage", (chatItem, html) => { 
+                html[0].querySelector("#reRollButton").addEventListener('click', (e) => { 
+                    let valid = true;
+                    if(macroSettings.trackBennies){
+                        if (currentActor.data.data.bennies.value > 0) {
+                            currentActor.update({"data.bennies.value" : currentActor.data.data.bennies.value - 1})
+                        }else{
+                            valid = false;
+                            ui.notifications.warn(i18n("swadeMacro.ui.notification.noBennies"));
+                        }
                     }
-                }
-
-                if (valid) {
-                    e.target.style.display = "none"; 
-                    params.bennieUsed = true;
-                    commitAttack(params);
-                }
-            }); 
+    
+                    if (valid) {
+                        e.target.style.display = "none";
+                        html[0].querySelector("#callDamageButton").style.display = "none";
+                        params.bennieUsed = true;
+                        commitAttack(params);
+                    }
+                });
+            });
         }
-        console.log(skillModPool.filter((el) => el.mod == "rangePenality")[0]);
+
         // Apply damage button and listener to chatTemplate if 1+ success
         if (successResultPool.length > 0) {
             // Add event to chat message html element
@@ -385,16 +387,14 @@ async function commitAttack(params)
                     threeRoundBurstAbility, 
                     isRangeAttack : attackSkillName == macroSettings.skillShooting,
                     rangePenality : skillModPool.filter((el) => el.mod == "rangePenality")[0].value
-                }, e.target);
+                });
             }); 
         }
 
         // Remove ammo from weapon
         if (attackSkillName == macroSettings.skillShooting && trackAmmo && !bennieUsed) {
-            console.log(weapon._id);
             let newShots = (weapon.data.data.shots -= ammoUsed);
             weapon.update({ "data.shots": newShots.toString() });
-            //currentActor.updateOwnedItem({_id: weapon._id,"data.shots": newShots.toString()});
         };
 
         // Displat chat template
@@ -509,7 +509,6 @@ async function damageResult(params)
     }
 
     // Prepare template
-    //let displayRollResultTemplate = ``;
     let targetShaken = currentTarget.data.data.status.isShaken;
 
     // Get armor equipped
