@@ -40,4 +40,14 @@ Hooks.once("init", () => {
 		type: Boolean
 	});
 
+	game.settings.register("swade-macros-simple", "trackBennies", {
+		name: i18n("swadeMacro.combatFlow.settings.trackBennies.name"),
+		hint: i18n("swadeMacro.combatFlow.settings.trackBennies.hint"),
+		scope: "world",
+		config: true,
+		default: true,
+		type: Boolean
+	});
+
+
 });

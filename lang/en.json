@@ -7,6 +7,8 @@
     "swadeMacro.combatFlow.settings.trackAmmo.hint" :"Default parameters to track ammunitions consumption",
     "swadeMacro.combatFlow.settings.grittyDamage.name" :"Combat Flow - Gritty Damage : ",
     "swadeMacro.combatFlow.settings.grittyDamage.hint" :"Default parameters to gritty damage",
+    "swadeMacro.combatFlow.settings.trackBennies.name" : "Combat Flow - Track bennies consumption : ",
+    "swadeMacro.combatFlow.settings.trackBennies.hint" : "Parameter to auto use bennies when reroll button is pressed",
 
     "swadeMacro.ui.notification.needActor" : "To attack you need to select a token",
     "swadeMacro.ui.notification.actorShaken" : "You are shaken, you can't attack",
@@ -14,6 +16,7 @@
     "swadeMacro.ui.notification.noWeaponsMessage" : "No disponible weapon for this attack type",
     "swadeMacro.ui.notification.rofNotValid" : "You need to select a valid RoF for your weapon",
     "swadeMacro.ui.notification.noEnougthAmmo" : "You have not enougth ammo for this rate of fire",
+    "swadeMacro.ui.notification.noBennies" : "You not have benny",
     
     "swadeMacro.combatDialog.title": "Combat",
     "swadeMacro.combatDialog.contentTemplate": "Please, choose one attack type",

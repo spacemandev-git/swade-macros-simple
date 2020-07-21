@@ -7,6 +7,8 @@
     "swadeMacro.combatFlow.settings.trackAmmo.hint" :"Grundeinstellung zur Aufzeichnung des Munitionsverbauch",
     "swadeMacro.combatFlow.settings.grittyDamage.name" :"Kampfablauf - Fieser Schaden : ",
     "swadeMacro.combatFlow.settings.grittyDamage.hint" :"Grundeinstellung für Fieser Schaden",
+    "swadeMacro.combatFlow.settings.trackBennies.name" : "Kampfablauf - Verfolgen Sie den Verbrauch von Bennies : ",
+    "swadeMacro.combatFlow.settings.trackBennies.hint" : "Parameter zur automatischen Verwendung von Bennies beim Drücken der Reroll-Taste",
 
     "swadeMacro.ui.notification.needActor" : "Bitte einen Token wählen, um angreifen zu können",
     "swadeMacro.ui.notification.actorShaken" : "Du bist angeschlagen, du kannst nicht angreifen",
@@ -14,6 +16,7 @@
     "swadeMacro.ui.notification.noWeaponsMessage" : "Keine Waffe für diese Angriffsart verfügbar",
     "swadeMacro.ui.notification.rofNotValid" : "Bitte eine gültige Feuerrate für deine Waffe wählen",
     "swadeMacro.ui.notification.noEnougthAmmo" : "Nicht genug Munition für diese Feuerrate vorhanden",
+    "swadeMacro.ui.notification.noBennies" : "Du hast keinen benny",
     
     "swadeMacro.combatDialog.title": "Gefecht",
     "swadeMacro.combatDialog.contentTemplate": "Bitte eine Angriffsart wählen",

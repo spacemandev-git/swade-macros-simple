@@ -346,9 +346,22 @@ async function commitAttack(params)
         // Apply bennie button and listener to chatTemplate if not critical failure
         if (!criticalFailure) {
             addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
-                e.target.style.display = "none"; 
-                params.bennieUsed = true;
-                commitAttack(params);
+                let valid = true;
+
+                if(game.settings.get("swade-macros-simple", "trackBennies")){
+                    if (currentActor.data.data.bennies.value > 0) {
+                        currentActor.update({"data.bennies.value" : currentActor.data.data.bennies.value - 1})
+                    }else{
+                        valid = false;
+                        ui.notifications.warn(i18n("swadeMacro.ui.notification.noBennies"));
+                    }
+                }
+
+                if (valid) {
+                    e.target.style.display = "none"; 
+                    params.bennieUsed = true;
+                    commitAttack(params);
+                }
             }); 
         }
         console.log(skillModPool.filter((el) => el.mod == "rangePenality")[0]);
@@ -559,9 +572,22 @@ async function damageResult(params)
 
     // Add event to chat message html element
     addEventListenerOnHtmlElement("#reRollButton", 'click', (e) => { 
-        e.target.style.display = "none"; 
-        params.bennieUsed = true;
-        damageResult(params);
+        let valid = true;
+                
+        if(game.settings.get("swade-macros-simple", "trackBennies")){
+            if (currentActor.data.data.bennies.value > 0) {
+                currentActor.update({"data.bennies.value" : currentActor.data.data.bennies.value - 1})
+            }else{
+                valid = false;
+                ui.notifications.warn(i18n("swadeMacro.ui.notification.noBennies"));
+            }
+        }
+
+        if (valid) {
+            e.target.style.display = "none"; 
+            params.bennieUsed = true;
+            damageResult(params);
+        }
     }); 
 
     // Displat chat template

@@ -7,6 +7,8 @@
     "swadeMacro.combatFlow.settings.trackAmmo.hint" :"Parâmetros padrões para o rastreio do consumo de munição.",
     "swadeMacro.combatFlow.settings.grittyDamage.name" :"Fluxo de Combate - Gritty Damage : ",
     "swadeMacro.combatFlow.settings.grittyDamage.hint" :"Default parameters to gritty damage",
+    "swadeMacro.combatFlow.settings.trackBennies.name" : "Fluxo de Combate - Controlar o consumo de bennies : ",
+    "swadeMacro.combatFlow.settings.trackBennies.hint" : "Parâmetro para usar automaticamente bennies quando o botão reroll é pressionado",
 
     "swadeMacro.ui.notification.needActor" : "Para atacar você precisa selecionar um token",
     "swadeMacro.ui.notification.actorShaken" : "Você está abalado, não pode atacar",
@@ -14,6 +16,7 @@
     "swadeMacro.ui.notification.noWeaponsMessage" : "Sem arma disponível para esse tipo de ataque",
     "swadeMacro.ui.notification.rofNotValid" : "Você precisa selecionar uma CdT válida para essa arma",
     "swadeMacro.ui.notification.noEnougthAmmo" : "Você não tem munição suficiente para essa cadência de tiro",
+    "swadeMacro.ui.notification.noBennies" : "Você não tem benny",
     
     "swadeMacro.combatDialog.title": "Combate",
     "swadeMacro.combatDialog.contentTemplate": "Por favor, selecione um tipo de ataque",
