@@ -129,3 +129,4 @@ You can set some default values from module settings
 - **Fighting skill name** : Define the name of fighting skill
 - **Track ammo consumption** : Define if you want track ammo consumption during range attack
 - **Gritty damage** : Define if you want apply gritty damage to all damage result
+- **Track bennies consumption** : Define if you want auto spend bennies while a reroll
