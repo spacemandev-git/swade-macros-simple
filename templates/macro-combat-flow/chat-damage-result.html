@@ -65,13 +65,23 @@
                     {{/each}}
                 {{else}}
                 <div class="container">
+                    {{#if isMeleeDamage}}
                     {{#each diceResultPool}}
                     <div class="flex-auto">
                         <div class="item" title="{{this.rollTitle}}" >
-                            <label class="white">{{this.roll.total}} {{#if isMeleeDamage}}(+{{this.raiseMeleeLite.total}}){{/if}}</label>
+                            <label class="white">{{this.roll.total}} (+{{this.raiseMeleeLite.total}})</label>
                         </div>
                     </div>
                     {{/each}}
+                    {{else}}
+                    {{#each diceResultPool}}
+                    <div class="flex-auto">
+                        <div class="item" title="{{this.rollTitle}}" >
+                            <label class="white">{{this.roll.total}}</label>
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{/if}}
                 </div>
                 {{/if}}
             </div>

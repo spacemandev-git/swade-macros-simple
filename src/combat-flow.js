@@ -342,7 +342,7 @@ async function commitAttack(params)
             weaponImg : weapon.data.img,
             weaponName : weapon.data.name,
             weaponNotes : weapon.data.data.notes,
-            targetName : (macroSettings.displayOption == 1) ? currentTarget.data.name : i18n("swadeMacro.commitAttackChat.defaultTargetName"),
+            targetName : (macroSettings.displayOption == 1) ? currentTarget.data.name : "",
             isRangeAttack : attackSkillName == macroSettings.skillShooting,
             isLiteDisplayMelee : (macroSettings.displayOption == 2 && attackSkillName == macroSettings.skillFighting),
             ammoUsed : ammoUsed,
@@ -576,13 +576,13 @@ async function damageResult(params)
         }
     });
 
-    
+    console.log(attackSkillName == macroSettings.skillFighting);
 
     let chatMessage = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/chat-damage-result.html",{
         weaponImg : weapon.data.img,
         weaponName : weapon.data.name,
         weaponAp : weapon.data.data.ap,
-        targetName : macroSettings.displayOption == 1 ? currentTarget.data.name : i18n("swadeMacro.commitAttackChat.defaultTargetName"),
+        targetName : macroSettings.displayOption == 1 ? currentTarget.data.name : "",
         toughnessValue : macroSettings.displayOption == 1 ? currentTarget.data.data.stats.toughness.value : 0,
         bennieUsed : bennieUsed,
         armorTitle : "armor : " + armorToughness + "\n" + "cover : " + coverBonus,
