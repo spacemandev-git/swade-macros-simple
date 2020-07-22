@@ -67,8 +67,8 @@
                 <div class="container">
                     {{#each diceResultPool}}
                     <div class="flex-auto">
-                        <div class="item" title="{{this.rollTitle}} (+1d6x=)" >
-                            <label class="white">{{this.roll.total}}  (+{{this.raiseMeleeLite.total}})</label>
+                        <div class="item" title="{{this.rollTitle}}" >
+                            <label class="white">{{this.roll.total}} {{#if isMeleeDamage}}(+{{this.raiseMeleeLite.total}}){{/if}}</label>
                         </div>
                     </div>
                     {{/each}}

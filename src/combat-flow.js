@@ -27,7 +27,7 @@ if (canvas.tokens.controlled.length != 1) {
 }
 
 // Check target selected
-if (Array.from(game.user.targets).length != 1) {
+if (Array.from(game.user.targets).length != 1 && (macroSettings.displayOption == 1)) {
     ui.notifications.warn(i18n("swadeMacro.ui.notification.needTarget"));
     isValidConditions = false;
 }
@@ -45,7 +45,7 @@ if (isValidConditions) openDialogCombat();
 async function openDialogCombat()
 {   
     // Set actor target
-    currentTarget = Array.from(game.user.targets)[0].actor;
+    if (macroSettings.displayOption == 1) currentTarget = Array.from(game.user.targets)[0].actor;
 
     // Set weapons list
     weapons = currentActor.items.filter((el) => el.type == "weapon" && el.data.data.equipped);
@@ -106,7 +106,7 @@ async function  meleeAttackForm(){
     }
 
     // Prepare melee atack form template
-    let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-melee-attack.html",{weapons : meleeWeapons });
+    let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-melee-attack.html",{weapons : meleeWeapons, isFullDisplay : macroSettings.displayOption == 1 });
 
     if (isValidConditions) {
         // Show form
@@ -145,7 +145,8 @@ async function rangedAttackForm(){
     let template = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/dialog-range-attack.html",{
         weapons : rangeWeapons, 
         trackAmmo : trackAmmoConsumption, 
-        notTrackAmmo : !trackAmmoConsumption 
+        notTrackAmmo : !trackAmmoConsumption,
+        isFullDisplay : macroSettings.displayOption == 1
     });
 
     // Show form
@@ -297,9 +298,11 @@ async function commitAttack(params)
     skillModPool.push({ mod : "isRecoil", title : i18n("swadeMacro.attack.skillMod.isRecoil"), abilitie : 0, value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
     skillModPool.push({ mod : "isUnstable", title : i18n("swadeMacro.attack.skillMod.isUnstable"), abilitie : 0, value : html.find("#isUnstable")[0] === undefined ? 0 : html.find("#isUnstable")[0].checked ? -2 : 0 });
     skillModPool.push({ mod : "distracted", title : i18n("swadeMacro.attack.skillMod.distracted"), abilitie : 0, value : currentActor.data.data.status.isDistracted ? -2 : 0});
-    skillModPool.push({ mod : "vulnerable", title : i18n("swadeMacro.attack.skillMod.vulnerable" ), abilitie : 0, value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
+    if (macroSettings.displayOption == 1)
+        skillModPool.push({ mod : "vulnerable", title : i18n("swadeMacro.attack.skillMod.vulnerable" ), abilitie : 0, value : currentTarget.data.data.status.isVulnerable ? 2 : 0});
     skillModPool.push({ mod : "woundsFatigue", title : i18n("swadeMacro.attack.skillMod.woundsFatigue" ), abilitie : 0, value : (currentActor.calcWoundPenalties() + currentActor.calcFatiguePenalties())});
-    skillModPool.push({ mod : "sizeScale", title : i18n("swadeMacro.attack.skillMod.sizeScale"), abilitie : 0, value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
+    if (macroSettings.displayOption == 1)
+        skillModPool.push({ mod : "sizeScale", title : i18n("swadeMacro.attack.skillMod.sizeScale"), abilitie : 0, value : (sizeScale[sizeScale.findIndex((el) => el.size == currentActor.data.data.stats.size)].mod * -1) + sizeScale[sizeScale.findIndex((el) => el.size == currentTarget.data.data.stats.size)].mod });
     skillModPool.push({ mod : "doubleTap", title : i18n("swadeMacro.attack.skillMod.doubleTap"), abilitie : doubleTapEdge ? 1 : 0, value : doubleTapEdge ? 1 : 0 });
     skillModPool.push({ mod : "threeRoundBurst", title : i18n("swadeMacro.attack.skillMod.threeRoundBurst"), abilitie : threeRoundBurstAbility ? 1 : 0, value : threeRoundBurstAbility ? 1 : 0 });
     if (attackSkillName == macroSettings.skillShooting) 
@@ -339,14 +342,14 @@ async function commitAttack(params)
             weaponImg : weapon.data.img,
             weaponName : weapon.data.name,
             weaponNotes : weapon.data.data.notes,
-            targetName : currentTarget.data.name,
+            targetName : (macroSettings.displayOption == 1) ? currentTarget.data.name : i18n("swadeMacro.commitAttackChat.defaultTargetName"),
             isRangeAttack : attackSkillName == macroSettings.skillShooting,
             isLiteDisplayMelee : (macroSettings.displayOption == 2 && attackSkillName == macroSettings.skillFighting),
             ammoUsed : ammoUsed,
             bennieUsed : bennieUsed,
             abilitiesUsed : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", ").length > 0,
             abilitites : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", "),
-            difficulty : attackSkillName == macroSettings.skillShooting ? "4" : currentTarget.data.data.stats.parry.value,
+            difficulty : attackSkillName == macroSettings.skillShooting ? "4" : (macroSettings.displayOption == 1) ? currentTarget.data.data.stats.parry.value : 0,
             modTitle : skillModPool.filter((el) => el.value != 0).map((el) => el.title + " : " + el.value).join("\n"),
             modValue : totalMod,
             isHit : successResultPool.length > 0 && !criticalFailure,
@@ -499,7 +502,7 @@ async function damageResult(params)
         }
 
         // Add Raise
-        if (!(macroSettings.displayOption == 2 && attackSkillName == macroSettings.skillFighting)){
+        if (macroSettings.displayOption == 1 || attackSkillName == macroSettings.skillShooting){
             weaponDamage += (successResultPool[i] == i18n("swadeMacro.commitAttackChat.raise") ? " + 1d6" : "")
         }
         weaponDamage += " + " + totalDamageMod;
@@ -514,34 +517,41 @@ async function damageResult(params)
     }
 
     // Prepare template
-    let targetShaken = currentTarget.data.data.status.isShaken;
+    let targetShaken =  macroSettings.displayOption == 1 ? currentTarget.data.data.status.isShaken : false;
 
     // Get armor equipped
     let armorToughness = 0;
-    if (!ignoreAmor) currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
+    if (!ignoreAmor && macroSettings.displayOption == 1) currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
 
     // Create roll result template
     diceResultPool.forEach((el) => {
         el.rollBgColor = el.exploded ? "background-color: rgb(0, 200, 0, 0.35);" : "";
-        el.rollTitle = el.roll.formula + "\n" + el.roll.result;
 
-        // Calcul total toughness
-        let totalToughness = (parseInt(currentTarget.data.data.stats.toughness.value) 
-                            + (parseInt(weapon.data.data.ap) > (parseInt(armorToughness) + parseInt(coverBonus)) ? 0 : (parseInt(armorToughness) + parseInt(coverBonus)) - parseInt(weapon.data.data.ap))
-                            + parseInt(currentTarget.data.data.stats.toughness.modifier));
+        if (macroSettings.displayOption == 1 || attackSkillName == macroSettings.skillShooting){
+            el.rollTitle = el.roll.formula + "\n" + el.roll.result;
+        }else{
+            el.rollTitle = el.roll.formula + " (+" + el.raiseMeleeLite.formula + ")\n" + el.roll.result + " (+" + el.raiseMeleeLite.result + ")";
+        }
 
-        el.toughness = totalToughness;
-        el.toughnessPassed = el.roll.total >= totalToughness;
-        
-        // Check if roll is better that toughness
-        if (el.roll.total >= totalToughness) {
-    
+        if (macroSettings.displayOption == 1)
+        {
+            // Calcul total toughness
+            let totalToughness = (parseInt(currentTarget.data.data.stats.toughness.value) 
+            + (parseInt(weapon.data.data.ap) > (parseInt(armorToughness) + parseInt(coverBonus)) ? 0 : (parseInt(armorToughness) + parseInt(coverBonus)) - parseInt(weapon.data.data.ap))
+            + parseInt(currentTarget.data.data.stats.toughness.modifier));
+
+            el.toughness = totalToughness;
+            el.toughnessPassed = el.roll.total >= totalToughness;
+
+            // Check if roll is better that toughness
+            if (el.roll.total >= totalToughness) {
+
             // Calcul wounds
             let wounds = Math.floor(((el.roll.total - totalToughness) / 4)) + (targetShaken ? 1 : 0);
 
             el.wounds = wounds;
             el.isNotShaken = !targetShaken;
-            
+
             el.wounded = wounds > 0;
             if (wounds > 0)
             {
@@ -552,7 +562,7 @@ async function damageResult(params)
 
                     let roll1 =new Roll("2d6").roll().total;
                     let roll2 =new Roll("1d6").roll().total;
-                    
+
                     let injury = criticalInjury.find((el) => el.value.includes(roll1));
                     let subInjury =  injury.subInjury != undefined ? injury.subInjury.find((el) => el.value.includes(roll2)) : undefined;
 
@@ -560,25 +570,28 @@ async function damageResult(params)
                     el.grittyDamageValue = subInjury == undefined ? injury.injury : subInjury.injury;
                 }
             }
-            
-            targetShaken = true;
-        }
 
+            targetShaken = true;
+            }
+        }
     });
+
+    
 
     let chatMessage = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/chat-damage-result.html",{
         weaponImg : weapon.data.img,
         weaponName : weapon.data.name,
         weaponAp : weapon.data.data.ap,
-        targetName : currentTarget.data.name,
-        toughnessValue : currentTarget.data.data.stats.toughness.value,
+        targetName : macroSettings.displayOption == 1 ? currentTarget.data.name : i18n("swadeMacro.commitAttackChat.defaultTargetName"),
+        toughnessValue : macroSettings.displayOption == 1 ? currentTarget.data.data.stats.toughness.value : 0,
         bennieUsed : bennieUsed,
         armorTitle : "armor : " + armorToughness + "\n" + "cover : " + coverBonus,
         armorValue : armorToughness + parseInt(coverBonus),
         damageModTitle : damageModPool.map((el) => el.title + " : " + el.value).join("\n"),
         damageModValue : totalDamageMod,
         diceResultPool : diceResultPool,
-        isFullDisplay : macroSettings.displayOption == 1
+        isFullDisplay : macroSettings.displayOption == 1,
+        isMeleeDamage : attackSkillName == macroSettings.skillFighting
     });
 
     // Add event to chat message html element

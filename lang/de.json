@@ -99,6 +99,7 @@
     "swadeMacro.commitAttackChat.raise" : "Steigerung",
     "swadeMacro.commitAttackChat.hit" : "Treffer",
     "swadeMacro.commitAttackChat.miss" : "Fehlschlag",
+    "swadeMacro.commitAttackChat.defaultTargetName" : "the target",
 
     "swadeMacro.damageResultChat.unmentionables" : "Weichteile",
     "swadeMacro.damageResultChat.arm" : "Arm",
