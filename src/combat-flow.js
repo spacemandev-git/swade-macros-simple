@@ -292,7 +292,6 @@ async function commitAttack(params)
 
     // Build Modifiers
     let skillModPool = [];
-    //skillModPool.push({ mod : "skilled", value : !parseInt(attackSkill.data.data.die.modifier) ? 0 : parseInt(attackSkill.data.data.die.modifier) });
     skillModPool.push({ mod : "rangePenality", title : i18n("swadeMacro.attack.skillMod.rangePenality"), abilitie : 0, value : html.find("#rangePenality")[0] === undefined ? 0 : parseInt(html.find("#rangePenality")[0].value) });
     skillModPool.push({ mod : "targetCover", title : i18n("swadeMacro.attack.skillMod.targetCover"), abilitie : 0, value : html.find("#targetCover")[0] === undefined ? 0 : parseInt(html.find("#targetCover")[0].value) });
     skillModPool.push({ mod : "isRecoil", title : i18n("swadeMacro.attack.skillMod.isRecoil"), abilitie : 0, value : html.find("#isRecoil")[0] === undefined ? 0 : html.find("#isRecoil")[0].checked ? -2 : 0 });
@@ -319,25 +318,30 @@ async function commitAttack(params)
 
     // Create roll result template
     diceResultPool.forEach((el) => {
-        el.bgColor = (el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.total > el.roll.parts[0].faces ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "");
+        el.bgColor = (el.type == "wildRoll" ? "background-color: rgb(255,215,0, 0.35);" : el.roll.dice.some((el) => el.rolls.some((el) => el.exploded == true) == true) ? "background-color : rgb(0, 200, 0, 0.35)" : el.roll.total == 1 ? "background-color : rgb(255, 0, 0, 0.35)" : "");
         
         if (el.saved){
-            let result = (el.roll.total + totalMod) >= (attackSkillName == macroSettings.skillShooting ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) + 4 ? { display : i18n("swadeMacro.commitAttackChat.raise"), color : "rgb(0, 0, 255, 0.35)" } :
-            (el.roll.total + totalMod) >= (attackSkillName == macroSettings.skillShooting ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) ? { display : i18n("swadeMacro.commitAttackChat.hit"), color : "rgb(0, 200, 0, 0.35)" } : { display : i18n("swadeMacro.commitAttackChat.miss"), color : "rgb(255, 0, 0, 0.35)" }
-            if (result.display != i18n("swadeMacro.commitAttackChat.miss")) successResultPool.push(result.display);
+            let result = {};
+            if (!(macroSettings.displayOption == 2 && attackSkillName == macroSettings.skillFighting)) {
+                result = (el.roll.total + totalMod) >= (attackSkillName == macroSettings.skillShooting ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) + 4 ? { display : i18n("swadeMacro.commitAttackChat.raise"), color : "background-color: rgb(0, 0, 255, 0.35)" } :
+                                (el.roll.total + totalMod) >= (attackSkillName == macroSettings.skillShooting ? 4 : parseInt(currentTarget.data.data.stats.parry.value)) ? { display : i18n("swadeMacro.commitAttackChat.hit"), color : "background-color: rgb(0, 200, 0, 0.35)" } : { display : i18n("swadeMacro.commitAttackChat.miss"), color : "background-color: rgb(255, 0, 0, 0.35)" }
+                if (result.display != i18n("swadeMacro.commitAttackChat.miss")) successResultPool.push(result.display);
+            }else{
+                successResultPool.push(result.display);
+            }
             result.total = (el.roll.total + totalMod);
             el.display = result;
         };
     });
     
     if (isValidConditions) {
-
         let chatMessage = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/chat-commit-attack.html",{
             weaponImg : weapon.data.img,
             weaponName : weapon.data.name,
             weaponNotes : weapon.data.data.notes,
             targetName : currentTarget.data.name,
             isRangeAttack : attackSkillName == macroSettings.skillShooting,
+            isLiteDisplayMelee : (macroSettings.displayOption == 2 && attackSkillName == macroSettings.skillFighting),
             ammoUsed : ammoUsed,
             bennieUsed : bennieUsed,
             abilitiesUsed : skillModPool.filter((el) => el.abilitie == 1).map((el) => el.title).join(", ").length > 0,
@@ -352,7 +356,6 @@ async function commitAttack(params)
 
         // Apply bennie button and listener to chatTemplate if not critical failure
         if (!criticalFailure) {
-
             Hooks.once("renderChatMessage", (chatItem, html) => { 
                 html[0].querySelector("#reRollButton").addEventListener('click', (e) => { 
                     let valid = true;
@@ -496,7 +499,9 @@ async function damageResult(params)
         }
 
         // Add Raise
-        weaponDamage += (successResultPool[i] == i18n("swadeMacro.commitAttackChat.raise") ? " + 1d6" : "")
+        if (!(macroSettings.displayOption == 2 && attackSkillName == macroSettings.skillFighting)){
+            weaponDamage += (successResultPool[i] == i18n("swadeMacro.commitAttackChat.raise") ? " + 1d6" : "")
+        }
         weaponDamage += " + " + totalDamageMod;
 
         // Explode all dices
@@ -505,7 +510,7 @@ async function damageResult(params)
 
         // Roll dices damages
         let roll = new Roll(weaponDamage).roll();
-        diceResultPool.push({ type: "damageRoll", roll : roll, exploded : roll.dice.some((el) => el.rolls.some((el) => el.exploded == true) == true)});
+        diceResultPool.push({ type: "damageRoll", roll : roll, raiseMeleeLite : new Roll("1d6x=").roll(), exploded : roll.dice.some((el) => el.rolls.some((el) => el.exploded == true) == true)});
     }
 
     // Prepare template
@@ -535,7 +540,6 @@ async function damageResult(params)
             let wounds = Math.floor(((el.roll.total - totalToughness) / 4)) + (targetShaken ? 1 : 0);
 
             el.wounds = wounds;
-            //el.isShaken = targetShaken;
             el.isNotShaken = !targetShaken;
             
             el.wounded = wounds > 0;

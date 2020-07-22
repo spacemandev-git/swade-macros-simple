@@ -18,7 +18,7 @@
     <p class="text-center"><b>{{localize "swadeMacro.commitAttackChat.bennieUsed"}}</b></p>
     {{/if}}
     <div class="chat-content-header-box text-center flex-row-wrap">
-            <div class="chat-content-header-body"><span>{{ localize "swadeMacro.commitAttackChat.dfficulty"}} </span><span>{{difficulty}}</span></div>
+            {{#unless isLiteDisplayMelee}}<div class="chat-content-header-body"><span>{{ localize "swadeMacro.commitAttackChat.dfficulty"}} </span><span>{{difficulty}}</span></div>{{/unless}}
             <div class="chat-content-header-body" title="{{modTitle}}"><span>{{ localize "swadeMacro.commitAttackChat.mods"}}</span><span>{{modValue}}</span></div>
     </div>
     <div class="chat-content-box text-center">
@@ -37,6 +37,7 @@
                     {{/each}}
                 </div>
             </div>
+            {{#unless isLiteDisplayMelee}}
             <div class="flex-colum">
                 <div class="title">
                     <label><b>{{ localize "swadeMacro.commitAttackChat.result"}}</b></label>
@@ -50,7 +51,7 @@
                     {{#each diceResultPool}}
                         {{# if this.saved}}
                         <div class="flex-auto">
-                            <div class="item" style="background-color : {{this.display.color}}" title="{{this.roll.total}} ({{this.display.total}})">
+                            <div class="item" style="{{this.display.color}}" title="{{this.roll.total}} ({{this.display.total}})">
                                 <label class="white">{{this.display.display}}</label>
                             </div>
                         </div>
@@ -59,16 +60,43 @@
                     {{/if}}
                 </div>
             </div>
+            {{else}}
+            <div class="flex-colum">
+                <div class="title">
+                    <label><b>{{ localize "swadeMacro.commitAttackChat.result"}}</b></label>
+                </div>
+                <div class="container">
+                    {{#each diceResultPool}}
+                        {{# if this.saved}}
+                        <div class="flex-auto">
+                            <div class="item" title="{{this.roll.total}}">
+                                <label class="white">{{this.display.total}}</label>
+                            </div>
+                        </div>
+                        {{/if}}
+                    {{/each}}
+                </div>
+            </div>
+            {{/unless}}
         </div>
     </div>
 </div>
-{{#unless isCriticalFailure}}
+{{#unless isLiteDisplayMelee}}
+    {{#unless isCriticalFailure}}
+    <div class="chat-button">
+        <button id="reRollButton"><center>{{localize "swadeMacro.commitAttackChat.useBennie"}}</center></button>
+    </div>
+    {{/unless}}
+    {{#if isHit}}
+    <div class="chat-button">
+        <button id="callDamageButton"><center>{{localize "swadeMacro.commitAttackChat.applyDamage"}}</center></button>
+    </div>
+    {{/if}}
+{{else}}
 <div class="chat-button">
     <button id="reRollButton"><center>{{localize "swadeMacro.commitAttackChat.useBennie"}}</center></button>
 </div>
-{{/unless}}
-{{#if isHit}}
 <div class="chat-button">
     <button id="callDamageButton"><center>{{localize "swadeMacro.commitAttackChat.applyDamage"}}</center></button>
 </div>
-{{/if}}
+{{/unless}}
