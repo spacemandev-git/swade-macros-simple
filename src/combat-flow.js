@@ -521,9 +521,11 @@ async function damageResult(params)
 
     // Get armor equipped
     let armorToughness = 0;
-    if (!ignoreAmor && macroSettings.displayOption == 1) currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
-
-    // Create roll result template
+    if (!ignoreAmor && macroSettings.displayOption == 1) {
+        //currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
+        armorToughness = currentTarget.data.data.stats.armor;
+    }
+        // Create roll result template
     diceResultPool.forEach((el) => {
         el.rollBgColor = el.exploded ? "background-color: rgb(0, 200, 0, 0.35);" : "";
 
