@@ -523,7 +523,7 @@ async function damageResult(params)
     let armorToughness = 0;
     if (!ignoreAmor && macroSettings.displayOption == 1) {
         //currentTarget.items.filter((el) => el.data.type == "armor" && el.data.data.equipped).forEach((el) => armorToughness += parseInt(el.data.data.armor));
-        armorToughness = currentTarget.data.data.stats.armor;
+        armorToughness = currentTarget.data.data.stats.toughness.armor;
     }
         // Create roll result template
     diceResultPool.forEach((el) => {
