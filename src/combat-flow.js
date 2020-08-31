@@ -269,7 +269,7 @@ async function commitAttack(params)
         };
         
         // Check ammo
-        if (ammoUsed > weapon.data.data.shots) {
+        if (ammoUsed > weapon.data.data.currentShots) {
             ui.notifications.warn(i18n("swadeMacro.ui.notification.noEnougthAmmo"));
             isValidConditions = false;
         };
@@ -399,8 +399,8 @@ async function commitAttack(params)
 
         // Remove ammo from weapon
         if (attackSkillName == macroSettings.skillShooting && trackAmmo && !bennieUsed) {
-            let newShots = (weapon.data.data.shots -= ammoUsed);
-            weapon.update({ "data.shots": newShots.toString() });
+            let newShots = (weapon.data.data.currentShots -= ammoUsed);
+            weapon.update({ "data.currentShots": newShots.toString() });
         };
 
         // Displat chat template
