@@ -538,7 +538,7 @@ async function damageResult(params)
         if (macroSettings.displayOption == 1)
         {
             // Calcul total toughness
-            let totalToughness = ( (currentTarget.calcToughness() - armorToughness) 
+            let totalToughness = ( (currentTarget.currentTarget.data.data.stats.toughness.value - armorToughness) 
             + (parseInt(weapon.data.data.ap) > (parseInt(armorToughness) + parseInt(coverBonus)) ? 0 : (parseInt(armorToughness) + parseInt(coverBonus)) - parseInt(weapon.data.data.ap))
             + parseInt(currentTarget.data.data.stats.toughness.modifier));
 
