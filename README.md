@@ -1,5 +1,10 @@
 # SWADE Macros Simple
 A set of useful macros for the SWADE system. Growing list, currently:
+
+
+## Auto Incap
+If actor wounds or fatigue reach above their max values, all the tokens they have active will auto get the skull icon. If you don't want this to happen, toggle it off in the settings.
+
 ### Card Draw Macro (Spacemandev/brunocalado)
 Draws random cards as tiles on top of the page.
 
