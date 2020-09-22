@@ -537,10 +537,24 @@ async function damageResult(params)
 
         if (macroSettings.displayOption == 1)
         {
+            // Add armor sources and AP
+            let armors = [];
+            armors.push(parseInt(armorToughness));
+            armors.push(parseInt(coverBonus));
+            armors.push(parseInt(weapon.data.data.ap) * -1)
+
+            // calculate armor value (min 0)
+            let armorValue = Math.max(0, armors.reduce((a, b) => a + b, 0));
+            
+            console.log(armors);
+            console.log(armorValue);
+
             // Calcul total toughness
-            let totalToughness = ( (currentTarget.currentTarget.data.data.stats.toughness.value - armorToughness) 
-            + (parseInt(weapon.data.data.ap) > (parseInt(armorToughness) + parseInt(coverBonus)) ? 0 : (parseInt(armorToughness) + parseInt(coverBonus)) - parseInt(weapon.data.data.ap))
-            + parseInt(currentTarget.data.data.stats.toughness.modifier));
+            let totalToughness = parseInt(currentTarget.data.data.stats.toughness.value) + armorValue;
+            // let totalToughness = ( (parseInt(currentTarget.data.data.stats.toughness.value)) 
+            // + (parseInt(weapon.data.data.ap) > (parseInt(armorToughness) + parseInt(coverBonus)) ? 0 : (parseInt(armorToughness) + parseInt(coverBonus)) - parseInt(weapon.data.data.ap)));
+
+            console.log(totalToughness);
 
             el.toughness = totalToughness;
             el.toughnessPassed = el.roll.total >= totalToughness;
@@ -548,43 +562,48 @@ async function damageResult(params)
             // Check if roll is better that toughness
             if (el.roll.total >= totalToughness) {
 
-            // Calcul wounds
-            let wounds = Math.floor(((el.roll.total - totalToughness) / 4)) + (targetShaken ? 1 : 0);
+                // Calcul wounds
+                let wounds = Math.floor(((el.roll.total - totalToughness) / 4));
+                
+                // Apply 1 wounds for shaken target without raise damage result
+                if (targetShaken && wounds == 0) wounds = 1;
 
-            el.wounds = wounds;
-            el.isNotShaken = !targetShaken;
+                console.log(wounds);
 
-            el.wounded = wounds > 0;
-            if (wounds > 0)
-            {
-                el.woundRank = (totalToughness + (wounds * 4));
-                el.isGrettyDamage = isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken);
+                el.wounds = wounds;
+                el.isNotShaken = !targetShaken;
 
-                if (isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken)) {
+                el.wounded = wounds > 0;
+                if (wounds > 0)
+                {
+                    el.woundRank = (totalToughness + ((wounds - targetShaken ? 1 : 0) * 4));
+                    el.isGrettyDamage = isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken);
 
-                    let roll1 =new Roll("2d6").roll().total;
-                    let roll2 =new Roll("1d6").roll().total;
+                    if (isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken)) {
 
-                    let injury = criticalInjury.find((el) => el.value.includes(roll1));
-                    let subInjury =  injury.subInjury != undefined ? injury.subInjury.find((el) => el.value.includes(roll2)) : undefined;
+                        let roll1 =new Roll("2d6").roll().total;
+                        let roll2 =new Roll("1d6").roll().total;
 
-                    el.grittyDamageTitle = roll1 + " " + (injury.subInjury != undefined ? "-> " + roll2 : "");
-                    el.grittyDamageValue = subInjury == undefined ? injury.injury : subInjury.injury;
+                        let injury = criticalInjury.find((el) => el.value.includes(roll1));
+                        let subInjury =  injury.subInjury != undefined ? injury.subInjury.find((el) => el.value.includes(roll2)) : undefined;
+
+                        el.grittyDamageTitle = roll1 + " " + (injury.subInjury != undefined ? "-> " + roll2 : "");
+                        el.grittyDamageValue = subInjury == undefined ? injury.injury : subInjury.injury;
+                    }
                 }
-            }
 
-            targetShaken = true;
+                targetShaken = true;
             }
         }
     });
 
-    console.log(attackSkillName == macroSettings.skillFighting);
-
+    console.log(currentTarget.data.data.status.isShaken);
     let chatMessage = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/chat-damage-result.html",{
         weaponImg : weapon.data.img,
         weaponName : weapon.data.name,
         weaponAp : weapon.data.data.ap,
         targetName : macroSettings.displayOption == 1 ? Array.from(game.user.targets)[0]?.data?.name : "",
+        targetAlreadyShaken : 1,
         toughnessValue : macroSettings.displayOption == 1 ? currentTarget.data.data.stats.toughness.value : 0,
         bennieUsed : bennieUsed,
         armorTitle : "armor : " + armorToughness + "\n" + "cover : " + coverBonus,

@@ -126,5 +126,6 @@
     "swadeMacro.damageResultChat.shaken" : "Secoué",
     "swadeMacro.damageResultChat.wounds" : "Blessures",
     "swadeMacro.damageResultChat.noDamage" : "Pas de blessure",
-    "swadeMacro.damageResultChat.useBennie" : "Utiliser un bennie pour relancer"
+    "swadeMacro.damageResultChat.useBennie" : "Utiliser un bennie pour relancer",
+    "swadeMacro.damageResultChat.targetAlreadyShaken": "La cible est déjà secouée"
 }

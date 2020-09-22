@@ -126,5 +126,6 @@
     "swadeMacro.damageResultChat.shaken" : "Angeschlagen",
     "swadeMacro.damageResultChat.wounds" : "Wunden",
     "swadeMacro.damageResultChat.noDamage" : "Kein Schaden",
-    "swadeMacro.damageResultChat.useBennie" : "Neu würfeln mit einem Bennie"
+    "swadeMacro.damageResultChat.useBennie" : "Neu würfeln mit einem Bennie",
+    "swadeMacro.damageResultChat.targetAlreadyShaken": "Ziel ist bereits erschüttert"
 }

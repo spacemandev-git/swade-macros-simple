@@ -126,5 +126,6 @@
     "swadeMacro.damageResultChat.shaken" : "Shaken",
     "swadeMacro.damageResultChat.wounds" : "Wounds",
     "swadeMacro.damageResultChat.noDamage" : "No Damage",
-    "swadeMacro.damageResultChat.useBennie" : "Reroll with a Bennie"
+    "swadeMacro.damageResultChat.useBennie" : "Reroll with a Bennie",
+    "swadeMacro.damageResultChat.targetAlreadyShaken": "Target is already shaken"
 }

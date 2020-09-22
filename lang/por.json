@@ -126,5 +126,6 @@
     "swadeMacro.damageResultChat.shaken" : "Abalado",
     "swadeMacro.damageResultChat.wounds" : "Ferimentos",
     "swadeMacro.damageResultChat.noDamage" : "Sem dano",
-    "swadeMacro.damageResultChat.useBennie" : "Rerolar com um Bene"
+    "swadeMacro.damageResultChat.useBennie" : "Rerolar com um Bene",
+    "swadeMacro.damageResultChat.targetAlreadyShaken": "Alvo já está abalado"
 }

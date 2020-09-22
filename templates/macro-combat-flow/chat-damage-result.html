@@ -7,6 +7,9 @@
             <span>{{ localize "swadeMacro.damageResultChat.ambiancePart1"}} <b>{{weaponName}}</b> {{localize "swadeMacro.damageResultChat.ambiancePart2"}} <b>{{targetName}}</b></span>
         </div>
     </div>
+    {{#if targetAlreadyShaken}}
+    <p class="text-center"><b>{{localize "swadeMacro.damageResultChat.targetAlreadyShaken"}}</b></p>
+    {{/if}}
     {{#if bennieUsed}}
     <p class="text-center"><b>{{localize "swadeMacro.damageResultChat.bennieUsed"}}</b></p>
     {{/if}}
@@ -42,7 +45,7 @@
                                 {{/if}}
                                 {{#if this.wounded}}
                                 <div class="flex-auto">
-                                    <div class="item bg-red" title=">={{this.woundRank}}">
+                                    <div class="item bg-red" title=">= {{this.woundRank}}">
                                         <label class="white">{{this.wounds}} {{localize "swadeMacro.damageResultChat.wounds"}}</label>
                                     </div>
                                 </div>
