@@ -561,7 +561,7 @@ async function damageResult(params)
                 let wounds = Math.floor(((el.roll.total - totalToughness) / 4));
                 
                 // Apply 1 wounds for shaken target without raise damage result
-                if (targetShaken) wounds++;
+                if (targetShaken && wounds == 0) wounds++;
 
                 el.wounds = wounds;
                 el.isNotShaken = !targetShaken;
@@ -569,7 +569,12 @@ async function damageResult(params)
                 el.wounded = wounds > 0;
                 if (wounds > 0)
                 {
-                    el.woundRank = (totalToughness + (wounds  * 4));
+                    if (Math.floor(((el.roll.total - totalToughness) / 4)) == 0){
+                        el.woundRank = totalToughness;
+                    }else{
+                        el.woundRank = (totalToughness + (wounds  * 4));
+                    }
+
                     el.isGrettyDamage = isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken);
 
                     if (isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken)) {

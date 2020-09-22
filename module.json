@@ -3,7 +3,7 @@
   "title": "SWADE Macros Simple",
   "description": "A set of automation macros for SWADE",
   "systems": ["swade"],
-  "version": "1.6.4",
+  "version": "1.6.5",
   "authors": [{ "name": "spacemandev" }, { "name": "Nnayl" }, { "name": "lipefl" }],
   "scripts": [
     "./scripts/incap.js"
@@ -46,5 +46,5 @@
   "minimumCoreVersion": "0.6.0",
   "compatibleCoreVersion": "0.7.2",
   "manifest": "https://raw.githubusercontent.com/spacemandev-git/swade-macros-simple/master/module.json",
-  "download": "https://github.com/spacemandev-git/swade-macros-simple/archive/v1.6.4.zip"
+  "download": "https://github.com/spacemandev-git/swade-macros-simple/archive/v1.6.5.zip"
 }
