@@ -545,16 +545,11 @@ async function damageResult(params)
 
             // calculate armor value (min 0)
             let armorValue = Math.max(0, armors.reduce((a, b) => a + b, 0));
-            
-            console.log(armors);
-            console.log(armorValue);
 
             // Calcul total toughness
             let totalToughness = parseInt(currentTarget.data.data.stats.toughness.value) + armorValue;
             // let totalToughness = ( (parseInt(currentTarget.data.data.stats.toughness.value)) 
             // + (parseInt(weapon.data.data.ap) > (parseInt(armorToughness) + parseInt(coverBonus)) ? 0 : (parseInt(armorToughness) + parseInt(coverBonus)) - parseInt(weapon.data.data.ap)));
-
-            console.log(totalToughness);
 
             el.toughness = totalToughness;
             el.toughnessPassed = el.roll.total >= totalToughness;
@@ -566,9 +561,7 @@ async function damageResult(params)
                 let wounds = Math.floor(((el.roll.total - totalToughness) / 4));
                 
                 // Apply 1 wounds for shaken target without raise damage result
-                if (targetShaken && wounds == 0) wounds = 1;
-
-                console.log(wounds);
+                if (targetShaken && wounds == 0) wounds++;
 
                 el.wounds = wounds;
                 el.isNotShaken = !targetShaken;
@@ -576,7 +569,7 @@ async function damageResult(params)
                 el.wounded = wounds > 0;
                 if (wounds > 0)
                 {
-                    el.woundRank = (totalToughness + ((wounds - targetShaken ? 1 : 0) * 4));
+                    el.woundRank = (totalToughness + (wounds  * 4));
                     el.isGrettyDamage = isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken);
 
                     if (isGrettyDamage && ((targetShaken && wounds > 1) || !targetShaken)) {
@@ -597,7 +590,6 @@ async function damageResult(params)
         }
     });
 
-    console.log(currentTarget.data.data.status.isShaken);
     let chatMessage = await renderTemplate("modules/swade-macros-simple/templates/macro-combat-flow/chat-damage-result.html",{
         weaponImg : weapon.data.img,
         weaponName : weapon.data.name,
